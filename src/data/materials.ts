@@ -1,6 +1,6 @@
 import { Material } from "@/types/material";
 
-// Curated subset of Setak.pdf "Tensile Strength — General Information" reference table,
+// Curated subset of a "Tensile Strength — General Information" reference table,
 // limited to materials relevant to light sheet/part processing on Aras Zanjan bench presses.
 // shearFactor 0.8 is the standard sheet-metal-industry rule of thumb (shear strength ≈ 80% of tensile strength).
 
@@ -175,7 +175,7 @@ export const materials: Material[] = [
     nameFa: "پلاستیک ABS",
     nameEn: "ABS",
     stdNo: "-",
-    standard: "Setak — Thermoplastic Reference",
+    standard: "General Engineering Reference",
     category: "thermoplastic",
     tensileMinMPa: 35,
     tensileMaxMPa: 56,
@@ -186,7 +186,7 @@ export const materials: Material[] = [
     nameFa: "پلی‌آمید PA6",
     nameEn: "PA 6",
     stdNo: "-",
-    standard: "Setak — Thermoplastic Reference",
+    standard: "General Engineering Reference",
     category: "thermoplastic",
     tensileMinMPa: 43,
     tensileMaxMPa: 43,
@@ -197,7 +197,7 @@ export const materials: Material[] = [
     nameFa: "پلی‌اکسی متیلن POM (دلرین)",
     nameEn: "POM",
     stdNo: "-",
-    standard: "Setak — Thermoplastic Reference",
+    standard: "General Engineering Reference",
     category: "thermoplastic",
     tensileMinMPa: 50,
     tensileMaxMPa: 70,
@@ -208,7 +208,7 @@ export const materials: Material[] = [
     nameFa: "پلی‌پروپیلن PP",
     nameEn: "PP",
     stdNo: "-",
-    standard: "Setak — Thermoplastic Reference",
+    standard: "General Engineering Reference",
     category: "thermoplastic",
     tensileMinMPa: 21,
     tensileMaxMPa: 37,

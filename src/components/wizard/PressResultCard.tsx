@@ -37,7 +37,9 @@ export function PressResultCard({ result, rank }: { result: RecommendationResult
           )}
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-bold">{press.model}</h3>
+              <Link href={`/catalog/${press.id}`} className="font-bold hover:text-accent hover:underline">
+                {press.model}
+              </Link>
               <Badge tone={statusTone[status]}>{statusLabel[status]}</Badge>
               {rank === 0 && status === "recommended" && <Badge tone="accent">بهترین گزینه</Badge>}
             </div>

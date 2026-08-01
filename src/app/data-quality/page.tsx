@@ -12,24 +12,16 @@ export default function DataQualityPage() {
       <SectionTitle
         eyebrow="شفافیت داده"
         title="کیفیت داده و منابع اطلاعاتی"
-        description="این سیستم تنها بر اساس داده‌های واقعاً موجود در دو سند منبع کار می‌کند. هیچ مقداری (وزن، توان موتور، سرعت) حدس زده یا جعل نشده — در عوض هر کمبود اطلاعاتی صراحتاً در این صفحه ثبت شده است."
+        description="این سیستم تنها بر اساس داده‌های واقعاً موجود در سند منبع کار می‌کند. هیچ مقداری (وزن، توان موتور، سرعت) حدس زده یا جعل نشده — در عوض هر کمبود اطلاعاتی صراحتاً در این صفحه ثبت شده است."
       />
 
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="mb-8">
         <Card className="p-4">
-          <Badge tone="accent">منبع ۱</Badge>
+          <Badge tone="accent">منبع</Badge>
           <h3 className="mt-2 font-bold">Presses-Catalogue-1.pdf</h3>
           <p className="mt-1 text-xs text-muted">
             کاتالوگ رسمی شرکت ارس زنجان (برند AZCO) — ۱۰ صفحه، طراحی‌شده با CorelDRAW X7 در سال ۱۳۹۵ (۲۰۱۶ میلادی). شامل معرفی شرکت،
             مشخصات فنی ۷ سری پرس و لیست نمایندگی‌های فروش قطعات استاندارد قالب.
-          </p>
-        </Card>
-        <Card className="p-4">
-          <Badge tone="neutral">منبع ۲</Badge>
-          <h3 className="mt-2 font-bold">Setak.pdf</h3>
-          <p className="mt-1 text-xs text-muted">
-            برگه مرجع «استحکام کششی مواد» از برند SETAAK (تامین‌کننده اجزای قالب) — یک صفحه، تولیدشده با Nitro PDF Pro. این سند محصول
-            ارس زنجان نیست؛ صرفاً به‌عنوان مرجع مهندسی برای محاسبات نیرو بر اساس جنس ماده در این سیستم استفاده شده است.
           </p>
         </Card>
       </div>

@@ -92,64 +92,71 @@ export default function CatalogPage() {
         {filtered.map((p) => {
           const series = getSeriesById(p.seriesId);
           return (
-            <Card key={p.id} className="overflow-hidden p-0">
-              {series && (
-                <div className="relative h-32 w-full bg-surface-2">
-                  <Image src={series.imageUrl} alt={p.model} fill className="object-cover" sizes="(min-width: 1024px) 33vw, 50vw" />
+            <Card key={p.id} className="overflow-hidden p-0 transition-colors hover:border-accent">
+              <Link href={`/catalog/${p.id}`} className="block">
+                {series && (
+                  <div className="relative h-32 w-full bg-surface-2">
+                    <Image src={series.imageUrl} alt={p.model} fill className="object-cover" sizes="(min-width: 1024px) 33vw, 50vw" />
+                  </div>
+                )}
+                <div className="p-4 pb-0">
+                  <div className="mb-1 flex items-center justify-between">
+                    <span className="font-bold">{p.model}</span>
+                    <Badge tone={p.frameMaterial === "cast-iron" ? "neutral" : "accent"}>
+                      {p.frameMaterial === "cast-iron" ? "چدنی" : "آهنی"}
+                    </Badge>
+                  </div>
+                  <div className="mb-2 text-[11px] text-muted">{series?.nameFa}</div>
+                  <div className="grid grid-cols-2 gap-1.5 text-xs">
+                    <div>
+                      <span className="text-muted">ظرفیت: </span>
+                      <span className="font-semibold">{formatNumber(p.capacityFullKgf)} kgf</span>
+                    </div>
+                    {p.capacityInitialKgf && (
+                      <div>
+                        <span className="text-muted">اولیه: </span>
+                        <span className="font-semibold">{p.capacityInitialKgf} kgf</span>
+                      </div>
+                    )}
+                    {p.tableSizeMm && (
+                      <div>
+                        <span className="text-muted">میز: </span>
+                        <span className="font-semibold">{p.tableSizeMm}</span>
+                      </div>
+                    )}
+                    {p.plateSizeMm && (
+                      <div>
+                        <span className="text-muted">پلاک: </span>
+                        <span className="font-semibold">{p.plateSizeMm}</span>
+                      </div>
+                    )}
+                    {p.throatDepthMm && (
+                      <div>
+                        <span className="text-muted">فاصله محور: </span>
+                        <span className="font-semibold">{p.throatDepthMm}mm</span>
+                      </div>
+                    )}
+                    {p.daylightRangeMm && (
+                      <div>
+                        <span className="text-muted">بازه ارتفاع: </span>
+                        <span className="font-semibold">
+                          {p.daylightRangeMm[0]}–{p.daylightRangeMm[1]}mm
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  {p.lowConfidence && (
+                    <div className="mt-2 text-[10px] text-warn">⚠ برخی ابعاد این مدل نیاز به تایید دارد.</div>
+                  )}
                 </div>
-              )}
-              <div className="p-4">
-              <div className="mb-1 flex items-center justify-between">
-                <span className="font-bold">{p.model}</span>
-                <Badge tone={p.frameMaterial === "cast-iron" ? "neutral" : "accent"}>
-                  {p.frameMaterial === "cast-iron" ? "چدنی" : "آهنی"}
-                </Badge>
-              </div>
-              <div className="mb-2 text-[11px] text-muted">{series?.nameFa}</div>
-              <div className="grid grid-cols-2 gap-1.5 text-xs">
-                <div>
-                  <span className="text-muted">ظرفیت: </span>
-                  <span className="font-semibold">{formatNumber(p.capacityFullKgf)} kgf</span>
-                </div>
-                {p.capacityInitialKgf && (
-                  <div>
-                    <span className="text-muted">اولیه: </span>
-                    <span className="font-semibold">{p.capacityInitialKgf} kgf</span>
-                  </div>
-                )}
-                {p.tableSizeMm && (
-                  <div>
-                    <span className="text-muted">میز: </span>
-                    <span className="font-semibold">{p.tableSizeMm}</span>
-                  </div>
-                )}
-                {p.plateSizeMm && (
-                  <div>
-                    <span className="text-muted">پلاک: </span>
-                    <span className="font-semibold">{p.plateSizeMm}</span>
-                  </div>
-                )}
-                {p.throatDepthMm && (
-                  <div>
-                    <span className="text-muted">فاصله محور: </span>
-                    <span className="font-semibold">{p.throatDepthMm}mm</span>
-                  </div>
-                )}
-                {p.daylightRangeMm && (
-                  <div>
-                    <span className="text-muted">بازه ارتفاع: </span>
-                    <span className="font-semibold">
-                      {p.daylightRangeMm[0]}–{p.daylightRangeMm[1]}mm
-                    </span>
-                  </div>
-                )}
-              </div>
-              {p.lowConfidence && (
-                <div className="mt-2 text-[10px] text-warn">⚠ برخی ابعاد این مدل نیاز به تایید دارد — به «کیفیت داده» مراجعه کنید.</div>
-              )}
-              <Link href={`/compare?ids=${p.id}`} className="mt-3 inline-block text-xs font-medium text-accent hover:underline">
-                افزودن به مقایسه ←
               </Link>
+              <div className="flex items-center justify-between px-4 pb-4 pt-3">
+                <Link href={`/catalog/${p.id}`} className="text-xs font-medium text-accent hover:underline">
+                  مشاهده مشخصات کامل ←
+                </Link>
+                <Link href={`/compare?ids=${p.id}`} className="text-xs font-medium text-muted hover:text-accent">
+                  افزودن به مقایسه
+                </Link>
               </div>
             </Card>
           );
