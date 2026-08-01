@@ -10,9 +10,9 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/", label: "انتخاب هوشمند" },
+  { href: "/calculators", label: "ماشین‌حساب‌های مهندسی" },
   { href: "/catalog", label: "کاتالوگ محصولات" },
   { href: "/compare", label: "مقایسه دستگاه‌ها" },
-  { href: "/calculators", label: "ماشین‌حساب‌های مهندسی" },
 ];
 
 export function AppHeader() {
@@ -31,8 +31,6 @@ export function AppHeader() {
             <span className="text-[11px] text-muted">سیستم هوشمند انتخاب پرس</span>
           </span>
         </Link>
-
-        <InstallButton />
 
         <nav className="hidden flex-1 items-center gap-1 overflow-x-auto md:flex">
           {navItems.map((item) => {
@@ -53,6 +51,7 @@ export function AppHeader() {
         </nav>
 
         <div className="ms-auto flex items-center gap-2">
+          <InstallButton />
           <button
             onClick={toggle}
             aria-label="تغییر حالت روشن/تاریک"
