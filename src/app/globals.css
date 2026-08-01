@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4f6f8;
+  --surface: #ffffff;
+  --surface-2: #eef1f4;
+  --foreground: #12181f;
+  --muted: #5b6670;
+  --border: #dde2e7;
+  --accent: #0e7c86;
+  --accent-strong: #0a5a62;
+  --accent-soft: #e3f2f3;
+  --warn: #b7791f;
+  --warn-soft: #fdf3e0;
+  --danger: #b3261e;
+  --danger-soft: #fbeae9;
+  --good: #1b7a4d;
+  --good-soft: #e6f4ec;
+  --shadow: 0 1px 2px rgba(16, 24, 32, 0.06), 0 4px 16px rgba(16, 24, 32, 0.06);
+}
+
+:root[data-theme="dark"] {
+  --background: #0d1117;
+  --surface: #151b23;
+  --surface-2: #1c2530;
+  --foreground: #e6edf3;
+  --muted: #8b98a5;
+  --border: #2a3441;
+  --accent: #2dd4c8;
+  --accent-strong: #6ee7de;
+  --accent-soft: #0f2e2c;
+  --warn: #e3b341;
+  --warn-soft: #2e2510;
+  --danger: #f0837a;
+  --danger-soft: #2e1614;
+  --good: #4fd08a;
+  --good-soft: #10261b;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: #0d1117;
+    --surface: #151b23;
+    --surface-2: #1c2530;
+    --foreground: #e6edf3;
+    --muted: #8b98a5;
+    --border: #2a3441;
+    --accent: #2dd4c8;
+    --accent-strong: #6ee7de;
+    --accent-soft: #0f2e2c;
+    --warn: #e3b341;
+    --warn-soft: #2e2510;
+    --danger: #f0837a;
+    --danger-soft: #2e1614;
+    --good: #4fd08a;
+    --good-soft: #10261b;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --font-sans: var(--font-vazir);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-vazir), "Vazirmatn", "Segoe UI", Tahoma, sans-serif;
+}
+
+::selection {
+  background: var(--accent);
+  color: white;
+}
+
+/* thin scrollbars for dense tables */
+.thin-scroll::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
