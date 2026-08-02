@@ -1,34 +1,47 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import BF from "@/calculators/bulkForming.js";
-import type { BulkFormingField, BulkFormingResult } from "@/calculators/bulkForming";
+import type { EngineField, EngineModule, EngineResult } from "@/calculators/engineModule";
 import { cn } from "@/lib/utils";
 
-// static translations for the handful of plain enum fields (not backed by a data table)
+// static translations for the handful of plain enum fields not backed by a data table
 const ENUM_LABELS: Record<string, string> = {
   direct: "مستقیم",
   indirect: "غیرمستقیم",
   wire: "مفتول",
   rod: "میله",
+  blanking: "بلانکینگ",
+  punching: "پانچینگ",
+  perpendicular: "عمود بر نورد",
+  parallel: "موازی نورد",
 };
 
-function optionLabel(optionKey: string): string {
+function optionLabel(module: EngineModule, optionKey: string): string {
   if (ENUM_LABELS[optionKey]) return ENUM_LABELS[optionKey];
-  const tables = [BF.data.PHYSICAL, BF.data.EXTRUSION_CONSTANT, BF.data.SHAPE_FACTOR_KF] as Record<
-    string,
-    { fa?: string }
-  >[];
-  for (const table of tables) {
-    const entry = table[optionKey];
+  for (const table of Object.values(module.data)) {
+    if (Array.isArray(table)) continue;
+    const entry = (table as Record<string, { fa?: string }>)[optionKey];
     if (entry?.fa) return entry.fa;
   }
   return optionKey;
 }
 
+/** first data table in the module whose entries carry both K and n (flow-curve constants) */
+function findMaterialPresetTable(module: EngineModule): Record<string, { fa: string; K: number; n: number }> | null {
+  for (const table of Object.values(module.data)) {
+    if (Array.isArray(table)) continue;
+    const first = Object.values(table)[0] as { K?: number; n?: number } | undefined;
+    if (first && typeof first.K === "number" && typeof first.n === "number") {
+      return table as Record<string, { fa: string; K: number; n: number }>;
+    }
+  }
+  return null;
+}
+
 function formatValue(v: unknown): string {
   if (v == null) return "—";
   if (Array.isArray(v)) return v.map((x) => formatValue(x)).join(" – ");
+  if (typeof v === "boolean") return v ? "بله" : "خیر";
   if (typeof v === "number") {
     if (!Number.isFinite(v)) return "—";
     const abs = Math.abs(v);
@@ -38,8 +51,8 @@ function formatValue(v: unknown): string {
   return String(v);
 }
 
-export function BulkFormingCalc() {
-  const groups = BF.UI.groups;
+export function EngineeringCalcPanel({ module }: { module: EngineModule }) {
+  const groups = module.UI.groups;
   const [groupKey, setGroupKey] = useState(groups[0].key);
   const group = useMemo(() => groups.find((g) => g.key === groupKey)!, [groups, groupKey]);
   const [calcKey, setCalcKey] = useState(group.calcs[0].key);
@@ -47,7 +60,8 @@ export function BulkFormingCalc() {
 
   const [values, setValues] = useState<Record<string, string>>({});
 
-  const hasColdMaterialFields = calc.fields.some((f) => f.key === "K") && calc.fields.some((f) => f.key === "n");
+  const presetTable = useMemo(() => findMaterialPresetTable(module), [module]);
+  const hasBareKN = calc.fields.some((f) => f.key === "K") && calc.fields.some((f) => f.key === "n");
 
   const selectGroup = (nextKey: string) => {
     const g = groups.find((x) => x.key === nextKey)!;
@@ -63,12 +77,13 @@ export function BulkFormingCalc() {
   const setField = (key: string, v: string) => setValues((prev) => ({ ...prev, [key]: v }));
 
   const applyMaterialPreset = (materialKey: string) => {
-    const m = BF.data.MATERIALS_COLD[materialKey];
+    if (!presetTable) return;
+    const m = presetTable[materialKey];
     if (!m) return;
     setValues((prev) => ({ ...prev, K: String(m.K), n: String(m.n) }));
   };
 
-  const result: { data: BulkFormingResult | null; error: string | null } = useMemo(() => {
+  const result: { data: EngineResult | null; error: string | null } = useMemo(() => {
     const input: Record<string, string | number> = {};
     for (const f of calc.fields) {
       const raw = values[f.key];
@@ -76,14 +91,14 @@ export function BulkFormingCalc() {
       input[f.key] = f.unit === "select" ? raw : Number(raw);
     }
     try {
-      const fn = (BF as unknown as Record<string, Record<string, (i: Record<string, unknown>) => BulkFormingResult>>)[
+      const fn = (module as unknown as Record<string, Record<string, (i: Record<string, unknown>) => EngineResult>>)[
         groupKey
       ][calcKey];
       return { data: fn(input), error: null };
     } catch (e) {
       return { data: null, error: e instanceof Error ? e.message : String(e) };
     }
-  }, [groupKey, calcKey, calc, values]);
+  }, [module, groupKey, calcKey, calc, values]);
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -118,7 +133,7 @@ export function BulkFormingCalc() {
           </select>
         </label>
 
-        {hasColdMaterialFields && (
+        {hasBareKN && presetTable && (
           <label className="block">
             <span className="mb-1 block text-xs font-medium text-muted">پیش‌فرض K و n از جدول مواد (اختیاری)</span>
             <select
@@ -127,7 +142,7 @@ export function BulkFormingCalc() {
               className="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm"
             >
               <option value="">— انتخاب ماده —</option>
-              {Object.entries(BF.data.MATERIALS_COLD).map(([key, m]) => (
+              {Object.entries(presetTable).map(([key, m]) => (
                 <option key={key} value={key}>
                   {m.fa} (K={m.K}, n={m.n})
                 </option>
@@ -137,8 +152,8 @@ export function BulkFormingCalc() {
         )}
 
         <div className="grid grid-cols-2 gap-3">
-          {calc.fields.map((f: BulkFormingField) => (
-            <FieldInput key={f.key} field={f} value={values[f.key] ?? ""} onChange={(v) => setField(f.key, v)} />
+          {calc.fields.map((f: EngineField) => (
+            <FieldInput key={f.key} module={module} field={f} value={values[f.key] ?? ""} onChange={(v) => setField(f.key, v)} />
           ))}
         </div>
       </div>
@@ -154,7 +169,7 @@ export function BulkFormingCalc() {
           <>
             <div className="grid grid-cols-2 gap-2">
               {calc.outputs.map((key) => {
-                const label = BF.UI.labels[key];
+                const label = module.UI.labels[key];
                 const value = result.data![key];
                 return (
                   <div key={key} className="rounded-md bg-surface/60 px-2.5 py-2">
@@ -204,11 +219,13 @@ export function BulkFormingCalc() {
 }
 
 function FieldInput({
+  module,
   field,
   value,
   onChange,
 }: {
-  field: BulkFormingField;
+  module: EngineModule;
+  field: EngineField;
   value: string;
   onChange: (v: string) => void;
 }) {
@@ -224,7 +241,7 @@ function FieldInput({
           <option value="">—</option>
           {field.options?.map((opt) => (
             <option key={opt} value={opt}>
-              {optionLabel(opt)}
+              {optionLabel(module, opt)}
             </option>
           ))}
         </select>

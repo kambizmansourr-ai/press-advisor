@@ -12,9 +12,11 @@ import {
   calcCoiningForce,
 } from "@/calculators/forceCalculators";
 import { formatNumber, cn } from "@/lib/utils";
-import { BulkFormingCalc } from "@/components/BulkFormingCalc";
+import { EngineeringCalcPanel } from "@/components/EngineeringCalcPanel";
+import BulkForming from "@/calculators/bulkForming.js";
+import SheetForming from "@/calculators/sheetForming.js";
 
-type Tab = "punching" | "bending" | "pressFit" | "riveting" | "coining" | "bulkForming";
+type Tab = "punching" | "bending" | "pressFit" | "riveting" | "coining" | "sheetForming" | "bulkForming";
 
 const tabs: { id: Tab; label: string }[] = [
   { id: "punching", label: "نیروی پانچ/برش" },
@@ -22,6 +24,7 @@ const tabs: { id: Tab; label: string }[] = [
   { id: "pressFit", label: "نیروی پرس‌فیت" },
   { id: "riveting", label: "نیروی پرچ‌کاری" },
   { id: "coining", label: "نیروی کوینینگ/امباس" },
+  { id: "sheetForming", label: "فرم‌دهی و برش ورق (پیشرفته)" },
   { id: "bulkForming", label: "فرم‌دهی حجمی (آهنگری/نورد/اکستروژن/کشش)" },
 ];
 
@@ -120,7 +123,8 @@ export default function CalculatorsPage() {
       {tab === "pressFit" && <PressFitCalc />}
       {tab === "riveting" && <RivetingCalc />}
       {tab === "coining" && <CoiningCalc />}
-      {tab === "bulkForming" && <BulkFormingCalc />}
+      {tab === "sheetForming" && <EngineeringCalcPanel module={SheetForming} />}
+      {tab === "bulkForming" && <EngineeringCalcPanel module={BulkForming} />}
     </div>
   );
 }

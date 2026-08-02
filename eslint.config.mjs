@@ -12,10 +12,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Vendored, independently-tested calculation module (see bulkForming.test.js) —
+    // Vendored, independently-tested calculation modules (see *.test.js) —
     // kept byte-for-byte as supplied rather than reformatted to house lint conventions.
     "src/calculators/bulkForming.js",
     "src/calculators/bulkForming.test.js",
+    "src/calculators/sheetForming.js",
+    "src/calculators/sheetForming.test.js",
   ]),
 ]);
 
