@@ -12,8 +12,9 @@ import {
   calcCoiningForce,
 } from "@/calculators/forceCalculators";
 import { formatNumber, cn } from "@/lib/utils";
+import { BulkFormingCalc } from "@/components/BulkFormingCalc";
 
-type Tab = "punching" | "bending" | "pressFit" | "riveting" | "coining";
+type Tab = "punching" | "bending" | "pressFit" | "riveting" | "coining" | "bulkForming";
 
 const tabs: { id: Tab; label: string }[] = [
   { id: "punching", label: "نیروی پانچ/برش" },
@@ -21,6 +22,7 @@ const tabs: { id: Tab; label: string }[] = [
   { id: "pressFit", label: "نیروی پرس‌فیت" },
   { id: "riveting", label: "نیروی پرچ‌کاری" },
   { id: "coining", label: "نیروی کوینینگ/امباس" },
+  { id: "bulkForming", label: "فرم‌دهی حجمی (آهنگری/نورد/اکستروژن/کشش)" },
 ];
 
 function ResultBox({ forceKgf, formulaFa, assumptionsFa }: { forceKgf: number; formulaFa: string; assumptionsFa: string[] }) {
@@ -118,6 +120,7 @@ export default function CalculatorsPage() {
       {tab === "pressFit" && <PressFitCalc />}
       {tab === "riveting" && <RivetingCalc />}
       {tab === "coining" && <CoiningCalc />}
+      {tab === "bulkForming" && <BulkFormingCalc />}
     </div>
   );
 }
