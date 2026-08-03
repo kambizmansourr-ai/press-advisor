@@ -12,9 +12,9 @@ const vazirmatn = Vazirmatn({
 });
 
 export const metadata: Metadata = {
-  title: "سیستم هوشمند انتخاب پرس | ارس زنجان",
+  title: "سیستم هوشمند ارس زنجان | AZCO",
   description:
-    "سیستم پشتیبان تصمیم مهندسی برای انتخاب پرس مناسب از میان محصولات شرکت ارس زنجان بر اساس کاربرد، جنس و ابعاد قطعه.",
+    "سیستم هوشمند مهندسی ارس زنجان: انتخاب پرس مناسب بر اساس کاربرد، ماشین‌حساب‌های فرآیندهای فلزکاری و راهنمای رایگان انتخاب اینسرت کاربایدی.",
   manifest: "/manifest.json",
   icons: {
     icon: [
@@ -47,7 +47,7 @@ export default function RootLayout({
           <AppHeader />
           <main className="flex-1">{children}</main>
           <footer className="border-t border-border py-6 text-center text-xs text-muted">
-            سیستم هوشمند انتخاب پرس — بر پایه کاتالوگ رسمی شرکت ارس زنجان (AZCO). داده‌های فنی از کاتالوگ منبع استخراج شده و در بخش «کیفیت داده» قابل بررسی است.
+            سیستم هوشمند ارس زنجان — بر پایه کاتالوگ رسمی شرکت ارس زنجان (AZCO). داده‌های فنی از کاتالوگ منبع استخراج شده و در بخش «کیفیت داده» قابل بررسی است.
           </footer>
         </ThemeProvider>
       </body>

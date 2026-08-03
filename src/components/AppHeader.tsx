@@ -13,6 +13,7 @@ const navItems = [
   { href: "/calculators", label: "ماشین‌حساب‌های مهندسی" },
   { href: "/catalog", label: "کاتالوگ محصولات" },
   { href: "/compare", label: "مقایسه دستگاه‌ها" },
+  { href: "/insert-selector", label: "راهنمای انتخاب اینسرت" },
 ];
 
 export function AppHeader() {
@@ -28,7 +29,7 @@ export function AppHeader() {
           </span>
           <span className="flex flex-col leading-tight">
             <span className="text-sm font-bold">ارس زنجان</span>
-            <span className="text-[11px] text-muted">سیستم هوشمند انتخاب پرس</span>
+            <span className="text-[11px] text-muted">سیستم هوشمند ارس زنجان</span>
           </span>
         </Link>
 
