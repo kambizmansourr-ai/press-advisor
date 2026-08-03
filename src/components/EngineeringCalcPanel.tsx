@@ -2,7 +2,9 @@
 
 import { useMemo, useState } from "react";
 import type { EngineField, EngineModule, EngineResult } from "@/calculators/engineModule";
+import { getCalcRef } from "@/data/calcReference";
 import { cn } from "@/lib/utils";
+import { BookOpen } from "lucide-react";
 
 // static translations for the handful of plain enum fields not backed by a data table
 const ENUM_LABELS: Record<string, string> = {
@@ -98,12 +100,13 @@ function getOutputValue(data: EngineResult, key: string): unknown {
   return undefined;
 }
 
-export function EngineeringCalcPanel({ module }: { module: EngineModule }) {
+export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModule; moduleKey: string }) {
   const groups = module.UI.groups;
   const [groupKey, setGroupKey] = useState(groups[0].key);
   const group = useMemo(() => groups.find((g) => g.key === groupKey)!, [groups, groupKey]);
   const [calcKey, setCalcKey] = useState(group.calcs[0].key);
   const calc = useMemo(() => group.calcs.find((c) => c.key === calcKey) ?? group.calcs[0], [group, calcKey]);
+  const calcRef = useMemo(() => getCalcRef(moduleKey, groupKey, calcKey), [moduleKey, groupKey, calcKey]);
 
   const [values, setValues] = useState<Record<string, string>>({});
 
@@ -179,6 +182,20 @@ export function EngineeringCalcPanel({ module }: { module: EngineModule }) {
             ))}
           </select>
         </label>
+
+        {calcRef && (
+          <div className="flex gap-2 rounded-lg border border-border bg-surface-2 p-3">
+            <BookOpen size={14} className="mt-0.5 shrink-0 text-accent" />
+            <div className="text-xs">
+              <p className="text-muted">{calcRef.useCase}</p>
+              {calcRef.formula && (
+                <p className="mt-1 rounded bg-surface/70 px-2 py-1 font-mono text-[11px] leading-relaxed" dir="ltr">
+                  {calcRef.formula}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         {hasBareKN && presetTable && (
           <label className="block">

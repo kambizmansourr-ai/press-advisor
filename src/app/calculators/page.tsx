@@ -16,19 +16,61 @@ import { EngineeringCalcPanel } from "@/components/EngineeringCalcPanel";
 import BulkForming from "@/calculators/bulkForming.js";
 import SheetForming from "@/calculators/sheetForming.js";
 import InjectionMolding from "@/calculators/injectionMolding.js";
+import { Compass } from "lucide-react";
 
 type Tab = "punching" | "bending" | "pressFit" | "riveting" | "coining" | "sheetForming" | "bulkForming" | "injectionMolding";
 
-const tabs: { id: Tab; label: string }[] = [
-  { id: "punching", label: "نیروی پانچ/برش" },
-  { id: "bending", label: "نیروی خم (V)" },
-  { id: "pressFit", label: "نیروی پرس‌فیت" },
-  { id: "riveting", label: "نیروی پرچ‌کاری" },
-  { id: "coining", label: "نیروی کوینینگ/امباس" },
-  { id: "sheetForming", label: "فرم‌دهی و برش ورق (پیشرفته)" },
-  { id: "bulkForming", label: "فرم‌دهی حجمی (آهنگری/نورد/اکستروژن/کشش)" },
-  { id: "injectionMolding", label: "قالب‌گیری تزریقی پلاستیک" },
+const tabs: { id: Tab; label: string; whenToUse: string }[] = [
+  {
+    id: "punching",
+    label: "نیروی پانچ/برش",
+    whenToUse: "کِی استفاده کنید: سوراخ‌کاری یا برش ساده یک شکل (دایره/مستطیل) از ورق فلزی نازک با سنبه و ماتریس — پیش از انتخاب پرس برای عملیات پانچ یا بلانکینگ ساده.",
+  },
+  {
+    id: "bending",
+    label: "نیروی خم (V)",
+    whenToUse: "کِی استفاده کنید: تخمین سریع نیروی لازم برای یک خم ساده تک‌مرحله‌ای با قالب V در پرس — برای انتخاب تناژ، نه طراحی دقیق قالب.",
+  },
+  {
+    id: "pressFit",
+    label: "نیروی پرس‌فیت",
+    whenToUse: "کِی استفاده کنید: جای‌گذاری فشاری یک قطعه استوانه‌ای (بوش، یاتاقان، پین، میل راهنما) با تداخل قطری داخل یک سوراخ.",
+  },
+  {
+    id: "riveting",
+    label: "نیروی پرچ‌کاری",
+    whenToUse: "کِی استفاده کنید: تخمین نیروی لازم برای فرم‌دهی سرد سر یک پرچ فلزی جهت اتصال دو یا چند ورق.",
+  },
+  {
+    id: "coining",
+    label: "نیروی کوینینگ/امباس",
+    whenToUse: "کِی استفاده کنید: تخمین نیروی لازم برای حک یا فرم‌دهی سطحی کم‌عمق (مارک‌زنی، لوگو، امباس) بر اساس سطح تصویرشده نقش.",
+  },
+  {
+    id: "sheetForming",
+    label: "فرم‌دهی و برش ورق (پیشرفته)",
+    whenToUse: "کِی استفاده کنید: طراحی دقیق‌تر قالب و فرآیند برای قطعات ورقی — شامل لقی و ابزار برش، طول خم و برگشت فنری، و کشش عمیق (قطر بلانک، امکان‌سنجی، برنامه چندمرحله‌ای). وقتی محاسبه‌های ساده بالا کافی نیستند از این استفاده کنید.",
+  },
+  {
+    id: "bulkForming",
+    label: "فرم‌دهی حجمی (آهنگری/نورد/اکستروژن/کشش)",
+    whenToUse: "کِی استفاده کنید: قطعه از یک شمش یا میلگرد توپر ساخته می‌شود، نه از ورق — آهنگری آزاد/قالب بسته، نورد تخت، اکستروژن یا کشش مفتول و میله.",
+  },
+  {
+    id: "injectionMolding",
+    label: "قالب‌گیری تزریقی پلاستیک",
+    whenToUse: "کِی استفاده کنید: قطعه از جنس پلاستیک و با فرآیند تزریق ساخته می‌شود — انتخاب ماشین تزریق، زمان سیکل، تعداد حفره، سیستم تغذیه (رانر/گیت) و جزئیات قالب.",
+  },
 ];
+
+function UseCaseNote({ text }: { text: string }) {
+  return (
+    <div className="mb-4 flex gap-2 rounded-lg border border-border bg-surface-2 p-3 text-xs text-muted">
+      <Compass size={14} className="mt-0.5 shrink-0 text-accent" />
+      <p>{text}</p>
+    </div>
+  );
+}
 
 function ResultBox({ forceKgf, formulaFa, assumptionsFa }: { forceKgf: number; formulaFa: string; assumptionsFa: string[] }) {
   return (
@@ -120,14 +162,16 @@ export default function CalculatorsPage() {
         ))}
       </div>
 
+      <UseCaseNote text={tabs.find((t) => t.id === tab)!.whenToUse} />
+
       {tab === "punching" && <PunchingCalc />}
       {tab === "bending" && <BendingCalc />}
       {tab === "pressFit" && <PressFitCalc />}
       {tab === "riveting" && <RivetingCalc />}
       {tab === "coining" && <CoiningCalc />}
-      {tab === "sheetForming" && <EngineeringCalcPanel module={SheetForming} />}
-      {tab === "bulkForming" && <EngineeringCalcPanel module={BulkForming} />}
-      {tab === "injectionMolding" && <EngineeringCalcPanel module={InjectionMolding} />}
+      {tab === "sheetForming" && <EngineeringCalcPanel module={SheetForming} moduleKey="sheetForming" />}
+      {tab === "bulkForming" && <EngineeringCalcPanel module={BulkForming} moduleKey="bulkForming" />}
+      {tab === "injectionMolding" && <EngineeringCalcPanel module={InjectionMolding} moduleKey="injectionMolding" />}
     </div>
   );
 }
