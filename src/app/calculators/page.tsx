@@ -13,6 +13,13 @@ import {
 } from "@/calculators/forceCalculators";
 import { formatNumber, cn } from "@/lib/utils";
 import { EngineeringCalcPanel } from "@/components/EngineeringCalcPanel";
+import {
+  PunchingIllustration,
+  BendingIllustration,
+  PressFitIllustration,
+  RivetingIllustration,
+  CoiningIllustration,
+} from "@/components/illustrations/simpleCalcs";
 import BulkForming from "@/calculators/bulkForming.js";
 import SheetForming from "@/calculators/sheetForming.js";
 import InjectionMolding from "@/calculators/injectionMolding.js";
@@ -221,6 +228,9 @@ function PunchingCalc() {
         <Field label="ضخامت ورق" unit="mm" value={thickness} onChange={setThickness} />
         <Field label="تعداد سوراخ" value={holeCount} onChange={setHoleCount} step={1} />
         <MaterialSelect value={materialId} onChange={setMaterialId} />
+        <div className="rounded-lg border border-border bg-surface-2 p-3">
+          <PunchingIllustration shape={shape} diameter={diameter} length={length} width={width} thickness={thickness} />
+        </div>
       </div>
       <ResultBox {...result} />
     </Card>
@@ -250,6 +260,9 @@ function BendingCalc() {
         <Field label="ضخامت ورق" unit="mm" value={thickness} onChange={setThickness} />
         <Field label="دهانه قالب V (۰ = خودکار: ۸×ضخامت)" unit="mm" value={dieOpening} onChange={setDieOpening} />
         <MaterialSelect value={materialId} onChange={setMaterialId} />
+        <div className="rounded-lg border border-border bg-surface-2 p-3">
+          <BendingIllustration bendLength={bendLength} thickness={thickness} />
+        </div>
       </div>
       <ResultBox {...result} />
     </Card>
@@ -279,13 +292,18 @@ function PressFitCalc() {
 
   return (
     <Card className="grid grid-cols-1 gap-6 p-5 md:grid-cols-2">
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="قطر شفت/بوش" unit="mm" value={shaft} onChange={setShaft} />
-        <Field label="قطر بیرونی میزبان" unit="mm" value={hub} onChange={setHub} />
-        <Field label="تداخل قطری" unit="mm" value={interference} onChange={setInterference} step={0.005} />
-        <Field label="طول تماس" unit="mm" value={contactLength} onChange={setContactLength} />
-        <Field label="ضریب اصطکاک" value={friction} onChange={setFriction} step={0.01} />
-        <Field label="مدول یانگ" unit="N/mm²" value={youngs} onChange={setYoungs} step={1000} />
+      <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="قطر شفت/بوش" unit="mm" value={shaft} onChange={setShaft} />
+          <Field label="قطر بیرونی میزبان" unit="mm" value={hub} onChange={setHub} />
+          <Field label="تداخل قطری" unit="mm" value={interference} onChange={setInterference} step={0.005} />
+          <Field label="طول تماس" unit="mm" value={contactLength} onChange={setContactLength} />
+          <Field label="ضریب اصطکاک" value={friction} onChange={setFriction} step={0.01} />
+          <Field label="مدول یانگ" unit="N/mm²" value={youngs} onChange={setYoungs} step={1000} />
+        </div>
+        <div className="rounded-lg border border-border bg-surface-2 p-3">
+          <PressFitIllustration shaft={shaft} hub={hub} contactLength={contactLength} />
+        </div>
       </div>
       <ResultBox {...result} />
     </Card>
@@ -308,6 +326,9 @@ function RivetingCalc() {
         <Field label="قطر پرچ" unit="mm" value={diameter} onChange={setDiameter} />
         <MaterialSelect value={materialId} onChange={setMaterialId} />
         <Field label="ضریب فرم‌دهی سرد" value={factor} onChange={setFactor} step={0.5} />
+        <div className="rounded-lg border border-border bg-surface-2 p-3">
+          <RivetingIllustration diameter={diameter} />
+        </div>
       </div>
       <ResultBox {...result} />
     </Card>
@@ -330,6 +351,9 @@ function CoiningCalc() {
         <Field label="سطح تصویرشده نقش" unit="mm²" value={area} onChange={setArea} step={1} />
         <MaterialSelect value={materialId} onChange={setMaterialId} />
         <Field label="ضریب فشار کوینینگ" value={factor} onChange={setFactor} step={0.5} />
+        <div className="rounded-lg border border-border bg-surface-2 p-3">
+          <CoiningIllustration area={area} />
+        </div>
       </div>
       <ResultBox {...result} />
     </Card>
