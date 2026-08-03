@@ -62,8 +62,11 @@ export interface EngineModule {
     labels: Record<string, EngineLabel>;
   };
   data: Record<string, Record<string, EngineDataEntry>>;
-  helpers: Record<string, (...args: unknown[]) => unknown>;
-  // process-group namespaces (forging/rolling/extrusion/drawing for bulk;
-  // cutting/bending/drawing for sheet) — accessed dynamically by group key.
+  helpers?: Record<string, (...args: unknown[]) => unknown>;
+  // Process-group namespaces (e.g. forging/rolling/extrusion/drawing for bulk;
+  // cutting/bending/drawing for sheet; geometry/machine/cooling/cavities/feed/
+  // part/mold for injection molding — UI.groups[].key does not always equal a
+  // namespace name 1:1, so calc functions are resolved by searching every
+  // namespace, not by direct module[groupKey][calcKey] indexing).
   [processGroup: string]: unknown;
 }

@@ -18,6 +18,8 @@ const eslintConfig = defineConfig([
     "src/calculators/bulkForming.test.js",
     "src/calculators/sheetForming.js",
     "src/calculators/sheetForming.test.js",
+    "src/calculators/injectionMolding.js",
+    "src/calculators/injectionMolding.test.js",
   ]),
 ]);
 

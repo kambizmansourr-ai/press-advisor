@@ -15,8 +15,9 @@ import { formatNumber, cn } from "@/lib/utils";
 import { EngineeringCalcPanel } from "@/components/EngineeringCalcPanel";
 import BulkForming from "@/calculators/bulkForming.js";
 import SheetForming from "@/calculators/sheetForming.js";
+import InjectionMolding from "@/calculators/injectionMolding.js";
 
-type Tab = "punching" | "bending" | "pressFit" | "riveting" | "coining" | "sheetForming" | "bulkForming";
+type Tab = "punching" | "bending" | "pressFit" | "riveting" | "coining" | "sheetForming" | "bulkForming" | "injectionMolding";
 
 const tabs: { id: Tab; label: string }[] = [
   { id: "punching", label: "نیروی پانچ/برش" },
@@ -26,6 +27,7 @@ const tabs: { id: Tab; label: string }[] = [
   { id: "coining", label: "نیروی کوینینگ/امباس" },
   { id: "sheetForming", label: "فرم‌دهی و برش ورق (پیشرفته)" },
   { id: "bulkForming", label: "فرم‌دهی حجمی (آهنگری/نورد/اکستروژن/کشش)" },
+  { id: "injectionMolding", label: "قالب‌گیری تزریقی پلاستیک" },
 ];
 
 function ResultBox({ forceKgf, formulaFa, assumptionsFa }: { forceKgf: number; formulaFa: string; assumptionsFa: string[] }) {
@@ -96,7 +98,7 @@ export default function CalculatorsPage() {
   const [tab, setTab] = useState<Tab>("punching");
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <SectionTitle
         eyebrow="ماشین‌حساب‌های مهندسی"
         title="محاسبه مستقل نیروی موردنیاز"
@@ -125,6 +127,7 @@ export default function CalculatorsPage() {
       {tab === "coining" && <CoiningCalc />}
       {tab === "sheetForming" && <EngineeringCalcPanel module={SheetForming} />}
       {tab === "bulkForming" && <EngineeringCalcPanel module={BulkForming} />}
+      {tab === "injectionMolding" && <EngineeringCalcPanel module={InjectionMolding} />}
     </div>
   );
 }
