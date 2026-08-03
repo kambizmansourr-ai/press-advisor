@@ -100,29 +100,50 @@ const shapeReasonFa: Record<InsertOperation, string> = {
   drilling: "مته‌های اینسرتی معمولاً از دو اینسرت با شکل سه‌گوش (W) در مرکز و محیط استفاده می‌کنند؛ برای مته‌های تک‌اینسرت کوچک، مثلثی (T) رایج‌تر است.",
 };
 
-const clearanceByPriority: Record<InsertPriority, string> = {
-  roughing: "N",
-  general: "N",
-  finishing: "C",
-};
+// Relief/clearance angle depends on workpiece material at least as much as
+// on priority: cast iron & hardened steel want a rigid negative (N) edge
+// regardless of pass; stainless wants a sharp positive edge to avoid
+// work-hardening; aluminum wants an even sharper edge to shed chips cleanly.
+function pickClearanceCode(operation: InsertOperation, material: InsertMaterialGroup, priority: InsertPriority): string {
+  if (material === "castiron" || material === "hardened") return "N";
+  if (material === "nonferrous") return priority === "finishing" ? "E" : "P";
+  if (material === "stainless") return priority === "finishing" ? "P" : "C";
+  let code = priority === "finishing" ? "C" : "N";
+  if (operation === "turning-int" && code === "N") code = "C"; // boring needs extra clearance for chip evacuation
+  return code;
+}
 
-const clearanceReasonFa: Record<InsertPriority, string> = {
-  roughing:
-    "زاویه آزاد ۰° (منفی) لبه برنده ضخیم‌تر و مقاوم‌تری برای ضربه و نیروی برش بالا در خشن‌کاری می‌دهد و امکان استفاده دوطرفه (اقتصادی‌تر) را فراهم می‌کند.",
-  general: "زاویه آزاد ۰° (منفی) رایج‌ترین انتخاب برای هلدر و کاربرد عمومی است — همان پایه اینسرت‌های خانواده CNMG.",
-  finishing: "زاویه آزاد مثبت ۷° نیروی برش را کاهش می‌دهد و برای قطعات کم‌صلبیت یا دیواره نازک، پرداخت سطح بهتری ایجاد می‌کند.",
-};
+function clearanceReasonFa(code: string, operation: InsertOperation, material: InsertMaterialGroup): string {
+  if (material === "castiron" || material === "hardened")
+    return "برای چدن/فولاد سخت‌کاری‌شده، زاویه آزاد صفر (N) لبه برنده مقاوم‌تری در برابر سایش و ضربه فراهم می‌کند.";
+  if (material === "nonferrous")
+    return code === "E"
+      ? "زاویه آزاد بزرگ (E≈20°) برای پرداخت‌کاری آلومینیوم، برش تیزتری می‌دهد و از چسبیدن براده به لبه جلوگیری می‌کند."
+      : "زاویه آزاد مثبت (P≈11°) برای آلیاژهای آلومینیوم/غیرآهنی نیروی برش را کاهش داده و از چسبیدن براده جلوگیری می‌کند.";
+  if (material === "stainless")
+    return code === "P"
+      ? "زاویه آزاد مثبت بزرگ‌تر (P≈11°) برای پرداخت‌کاری استیل ضدزنگ، نیروی برش و گرمای موضعی را کاهش می‌دهد."
+      : "زاویه آزاد مثبت (C≈7°) لبه تیزتری برای استیل ضدزنگ فراهم می‌کند و از سخت‌شدگی سطحی (work hardening) جلوگیری می‌کند.";
+  if (operation === "turning-int" && code === "C")
+    return "در بورینگ، زاویه آزاد مثبت (C≈7°) فضای بیشتری برای خروج براده از داخل سوراخ فراهم می‌کند.";
+  return code === "N"
+    ? "زاویه آزاد صفر (منفی) لبه برنده ضخیم‌تر و مقاوم‌تری برای نیروی برش بالا در خشن‌کاری/عمومی می‌دهد و امکان استفاده دوطرفه (اقتصادی‌تر) را فراهم می‌کند."
+    : "زاویه آزاد مثبت (C≈7°) نیروی برش را کاهش می‌دهد و برای پرداخت‌کاری سطح بهتری ایجاد می‌کند.";
+}
 
+// Per common turning practice: G (precision) for finishing / non-ferrous /
+// hardened-steel finishing; M (general → heavy roughing) as the versatile
+// default; U (loosest) specifically for roughing.
 const toleranceByPriority: Record<InsertPriority, string> = {
-  roughing: "M",
+  roughing: "U",
   general: "M",
   finishing: "G",
 };
 
 const toleranceReasonFa: Record<InsertPriority, string> = {
-  roughing: "کلاس M استاندارد و مقرون‌به‌صرفه‌ترین کلاس تلورانس عمومی است؛ در خشن‌کاری اختلاف جزئی ابعاد اینسرت اهمیتی ندارد.",
-  general: "کلاس M برای اکثر کاربردهای عمومی کافی و رایج‌ترین انتخاب صنعتی است.",
-  finishing: "کلاس G تلورانس ضخامت دقیق‌تری دارد و برای پاس‌های پرداخت‌کاری که ثبات ابعاد اینسرت مهم است مناسب‌تر است.",
+  roughing: "کلاس U (بازترین تلورانس) برای خشن‌کاری کافی و مقرون‌به‌صرفه‌ترین انتخاب است؛ اختلاف جزئی ابعاد اینسرت در این مرحله اهمیتی ندارد.",
+  general: "کلاس M طیف وسیعی از عمومی تا خشن‌کاری سنگین را پوشش می‌دهد و رایج‌ترین انتخاب صنعتی برای کاربرد عمومی است.",
+  finishing: "کلاس G (دقیق) برای پرداخت‌کاری، فلزات غیرآهنی و پرداخت فولاد سخت‌کاری‌شده مناسب است — ثبات ابعاد اینسرت در این پاس‌ها اهمیت دارد.",
 };
 
 const geometryByPriority: Record<InsertPriority, string> = {
@@ -168,12 +189,32 @@ function pickThicknessCode(feedMm: number, priority: InsertPriority): string {
   return (fit ?? ordered[ordered.length - 1]).code;
 }
 
-const cornerByPriority: Record<InsertPriority, string> = { roughing: "16", general: "08", finishing: "04" };
-const cornerReasonFa: Record<InsertPriority, string> = {
-  roughing: "شعاع نوک بزرگ‌تر (1.6mm) لبه برنده را در برابر ضربه و نیروی خشن‌کاری تقویت می‌کند.",
-  general: "شعاع نوک متوسط (0.8mm) — رایج‌ترین انتخاب — تعادل خوبی بین استحکام لبه و کیفیت سطح می‌دهد.",
-  finishing: "شعاع نوک کوچک (0.4mm) نیروی رادیال را کاهش داده و از لرزش/چتر در پاس‌های سبک پرداخت‌کاری جلوگیری می‌کند.",
-};
+// Nose radius rule: rε ≥ 1.25 × feed (so max feed never exceeds ~80% of the
+// radius — beyond that, chip control and edge strength both suffer). This is
+// a *minimum*; practical roughing/general/finishing defaults sit well above
+// it for typical feeds and only escalate when the entered feed demands it.
+const cornerFloorByPriority: Record<InsertPriority, string> = { roughing: "16", general: "08", finishing: "04" };
+const cornerMmByCode: Record<string, number> = { "02": 0.2, "04": 0.4, "08": 0.8, "12": 1.2, "16": 1.6, "24": 2.4, "32": 3.2 };
+
+function pickCornerCode(feedMm: number, priority: InsertPriority): string {
+  const minByFormula = 1.25 * feedMm;
+  const floorMm = cornerMmByCode[cornerFloorByPriority[priority]];
+  const target = Math.max(minByFormula, floorMm);
+  const ordered = insertCornersMetric.filter((c) => c.code !== "00").map((c) => ({ code: c.code, mm: cornerMmByCode[c.code] }));
+  const fit = ordered.find((c) => c.mm >= target);
+  return (fit ?? ordered[ordered.length - 1]).code;
+}
+
+function cornerReasonFa(code: string, feedMm: number, priority: InsertPriority): string {
+  const radiusMm = cornerMmByCode[code];
+  const minByFormula = 1.25 * feedMm;
+  if (minByFormula > cornerMmByCode[cornerFloorByPriority[priority]]) {
+    return `طبق قاعده rε ≥ ۱.۲۵×پیشروی (کنترل براده/استحکام لبه)، با پیشروی ~${feedMm.toFixed(2)}mm/rev حداقل شعاع نوک ${minByFormula.toFixed(
+      2
+    )}mm لازم است.`;
+  }
+  return `شعاع نوک ${radiusMm}mm، مقدار متداول برای این اولویت کاری و به‌وضوح قاعده rε ≥ ۱.۲۵×پیشروی را با پیشروی وارد‌شده رعایت می‌کند.`;
+}
 
 const gradeAdviceByMaterial: Record<InsertMaterialGroup, string> = {
   steel: "برای فولاد (گروه P)، گرید کارباید پوشش‌دار CVD/PVD با مقاومت سایشی بالا مناسب است؛ در سرعت برش بالا از کوتینگ TiCN/Al2O3 استفاده کنید.",
@@ -190,12 +231,12 @@ export function recommendInsert(input: InsertRecommendationInput): InsertRecomme
   const feedMm = input.feedMmRev && input.feedMmRev > 0 ? input.feedMmRev : defaultFeedByPriorityMm[priority];
 
   const shapeCode = shapeByOperationAndPriority[operation][priority];
-  const clearanceCode = clearanceByPriority[priority];
+  const clearanceCode = pickClearanceCode(operation, material, priority);
   const toleranceCode = toleranceByPriority[priority];
   const geometryCode = geometryByPriority[priority];
   const sizeCode = pickSizeCode(depthMm, priority);
   const thicknessCode = pickThicknessCode(feedMm, priority);
-  const cornerCode = cornerByPriority[priority];
+  const cornerCode = pickCornerCode(feedMm, priority);
 
   const shapeOpt = findOption(insertShapes, shapeCode)!;
   const geometryOpt = findOption(insertGeometries, geometryCode)!;
@@ -206,6 +247,7 @@ export function recommendInsert(input: InsertRecommendationInput): InsertRecomme
   const notesFa: string[] = [
     "این ابزار یک راهنمای اولیه بر پایه اصول عمومی ماشین‌کاری است، نه محاسبه دقیق مهندسی. برای انتخاب نهایی گرید کارباید، پوشش و کد دقیق سازنده، حتماً کاتالوگ تولیدکننده ابزار خود را بررسی کنید.",
     "شش رقم پایانی کد (اندازه–ضخامت–شعاع نوک) با استاندارد متریک ISO 1832 نوشته شده‌اند (مثلاً 12 04 08)؛ چهار حرف ابتدایی کد (شکل، زاویه آزاد، تلورانس، هندسه) بین سیستم ANSI و ISO مشترک است.",
+    "سازندگان معمولاً یک پسوند اختصاصی (مثل «-MS» یا «-PM») بعد از این کد ده‌رقمی برای مشخص‌کردن نوع دقیق شکن‌براده خود اضافه می‌کنند — در کاتالوگ سازنده به‌دنبال نزدیک‌ترین معادل بگردید.",
   ];
   if (operation === "grooving") {
     notesFa.push("شیارزنی/برش معمولاً خانواده اینسرت اختصاصی (تیغه‌ای) دارد که با این جدول کدگذاری عمومی تطابق کامل ندارد.");
@@ -213,17 +255,56 @@ export function recommendInsert(input: InsertRecommendationInput): InsertRecomme
   if (operation === "drilling") {
     notesFa.push("مته‌های اینسرتی اغلب از دو کد اینسرت متفاوت (مرکزی و محیطی) استفاده می‌کنند؛ کد پیشنهادی فقط یک نقطه شروع است.");
   }
+  const grooveFamilyLetter = priority === "roughing" ? "R" : priority === "finishing" ? "F" : "M";
+  notesFa.push(
+    `در کاتالوگ‌های تجاری، خانواده شکن‌براده اغلب با ترکیب گروه ماده ISO و نوع فرآیند نام‌گذاری می‌شود — برای این انتخاب دنبال چیزی شبیه «${materialLabels[material].isoGroup}${grooveFamilyLetter}» بگردید (مثلاً PM برای فولاد عمومی، KF برای پرداخت چدن).`
+  );
 
   return {
     designationCode: `${shapeCode}${clearanceCode}${toleranceCode}${geometryCode} ${sizeCode}${thicknessCode}${cornerCode}`,
     shape: { code: shapeCode, labelFa: shapeOpt.labelFa, reasonFa: shapeReasonFa[operation] },
-    clearance: { code: clearanceCode, labelFa: `زاویه آزاد ${findOption(insertClearances, clearanceCode)?.labelFa ?? ""}`, reasonFa: clearanceReasonFa[priority] },
+    clearance: {
+      code: clearanceCode,
+      labelFa: `زاویه آزاد ${findOption(insertClearances, clearanceCode)?.labelFa ?? ""}`,
+      reasonFa: clearanceReasonFa(clearanceCode, operation, material),
+    },
     tolerance: { code: toleranceCode, labelFa: `کلاس تلورانس ${toleranceCode}`, reasonFa: toleranceReasonFa[priority] },
     geometry: { code: geometryCode, labelFa: geometryOpt.labelFa, reasonFa: geometryReasonFa[priority] },
     size: { code: sizeCode, labelFa: sizeOpt.labelFa, reasonFa: `اندازه پایه رایج برای این اولویت کاری؛ عمق برش ~${depthMm.toFixed(1)}mm نیازمند بزرگ‌تر شدن اینسرت نیست (در عمق‌های بیشتر، اینسرت بزرگ‌تر پیشنهاد می‌شود).` },
     thickness: { code: thicknessCode, labelFa: thicknessOpt.labelFa, reasonFa: `بر اساس پیشروی تقریبی ~${feedMm.toFixed(2)}mm/rev و نیاز به استحکام لبه در این اولویت کاری.` },
-    corner: { code: cornerCode, labelFa: cornerOpt.labelFa, reasonFa: cornerReasonFa[priority] },
+    corner: { code: cornerCode, labelFa: cornerOpt.labelFa, reasonFa: cornerReasonFa(cornerCode, feedMm, priority) },
     gradeAdviceFa: gradeAdviceByMaterial[material],
     notesFa,
   };
+}
+
+const materialTipFa: Record<InsertMaterialGroup, string> = {
+  steel: "برای فولاد عمومی، سرعت برش و پیشروی استاندارد کاتالوگ گرید انتخابی را مبنا قرار دهید؛ نیازی به تمهیدات ویژه نیست.",
+  stainless: "استیل ضدزنگ مستعد سخت‌شدگی سطحی (work hardening) است — از خنک‌کاری کافی/فشار بالا و پیشروی پیوسته (بدون توقف روی قطعه) استفاده کنید.",
+  castiron: "چدن معمولاً براده پودری تولید می‌کند؛ اغلب می‌توان بدون خنک‌کاری (خشک) کار کرد، اما جمع‌آوری گرد و غبار را در نظر بگیرید.",
+  nonferrous: "برای آلومینیوم، سرعت برش بالا و لبه بسیار تیز کلیدی است تا از تشکیل لبه انباشته (BUE) روی ابزار جلوگیری شود.",
+  hardened: "فولاد سخت‌کاری‌شده (بالای ۴۵ HRC) نیازمند صلبیت بسیار بالای دستگاه و هلدر است؛ کوچک‌ترین لرزش عمر ابزار را به‌شدت کاهش می‌دهد.",
+  superalloy: "سوپرآلیاژ/تیتانیوم گرمای برش را در نوک ابزار متمرکز می‌کند — سرعت برش را پایین نگه دارید و خنک‌کاری فراوان و پیوسته فراهم کنید.",
+};
+
+const operationTipFa: Partial<Record<InsertOperation, string>> = {
+  "turning-int": "در بورینگ، میله ابزار (boring bar) را تا حد امکان کوتاه و ضخیم انتخاب کنید — طول آزاد زیاد اصلی‌ترین عامل لرزش است.",
+  grooving: "عرض اینسرت شیار باید دقیقاً برابر عرض شیار طراحی‌شده باشد؛ کد پیشنهادی این ابزار برای شکل کلی است، نه عرض دقیق شیار.",
+  drilling: "برای مته اینسرتی، پیشروی ورودی (ورود به سطح) را کمتر از پیشروی پایدار شروع کنید تا از شکست لبه در لحظه تماس جلوگیری شود.",
+  "face-milling": "در فرزکاری صفحه، محور فرز را کمی (۱۰ تا ۱۵ میلی‌متر) نسبت به مرکز قطعه آفست کنید تا از برخورد هم‌زمان چند لبه و لرزش جلوگیری شود.",
+};
+
+/** Live, low-cost contextual tips shown alongside the form — not part of the designation code itself. */
+export function getSmartTips(input: InsertRecommendationInput): string[] {
+  const tips: string[] = [materialTipFa[input.material]];
+  const opTip = operationTipFa[input.operation];
+  if (opTip) tips.push(opTip);
+
+  if (input.priority === "finishing" && input.feedMmRev && input.feedMmRev > 0.15) {
+    tips.push("پیشروی واردشده برای پرداخت‌کاری نسبتاً بالاست — ممکن است کیفیت سطح مطلوب حاصل نشود؛ پیشروی کمتر از ۰.۱۵mm/rev را در نظر بگیرید.");
+  }
+  if (input.priority === "roughing" && input.depthOfCutMm !== undefined && input.depthOfCutMm > 0 && input.depthOfCutMm < 1) {
+    tips.push("عمق برش واردشده برای خشن‌کاری کم به نظر می‌رسد — در صورت اجازه دستگاه/قدرت، عمق بیشتر بهره‌وری را بالا می‌برد.");
+  }
+  return tips;
 }

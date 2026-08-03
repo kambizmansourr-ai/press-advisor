@@ -42,19 +42,21 @@ export const insertClearances: DesignationOption[] = [
   { code: "G", labelFa: "۳۰°" },
 ];
 
+// Chinese/ISO-aligned metric tolerance table (m = nose-height tolerance,
+// IC = inscribed-circle tolerance, S1 = thickness tolerance), in mm.
 export const insertTolerances: DesignationOption[] = [
-  { code: "A", labelFa: "کلاس A", detailFa: "d=±.0010″ · m=±.0002″ · t=±.001″" },
-  { code: "F", labelFa: "کلاس F", detailFa: "d=±.0005″ · m=±.0002″ · t=±.001″" },
-  { code: "C", labelFa: "کلاس C", detailFa: "d=±.0010″ · m=±.0005″ · t=±.001″" },
-  { code: "H", labelFa: "کلاس H", detailFa: "d=±.0010″ · m=±.0005″ · t=±.001″" },
-  { code: "E", labelFa: "کلاس E", detailFa: "d=±.0010″ · m=±.0010″ · t=±.001″" },
-  { code: "G", labelFa: "کلاس G (دقیق)", detailFa: "d=±.0010″ · m=±.0010″ · t=±.005″" },
-  { code: "J", labelFa: "کلاس J", detailFa: "d=±.002 تا ±.006″ · m=±.0002″ · t=±.001″" },
-  { code: "K", labelFa: "کلاس K", detailFa: "d=±.002 تا ±.006″ · m=±.0005″ · t=±.001″" },
-  { code: "L", labelFa: "کلاس L", detailFa: "d=±.002 تا ±.006″ · m=±.0010″ · t=±.001″" },
-  { code: "M", labelFa: "کلاس M (استاندارد/عمومی)", detailFa: "d=±.002 تا ±.006″ · m=±.003 تا ±.008″ · t=±.005″" },
-  { code: "N", labelFa: "کلاس N", detailFa: "d=±.002 تا ±.006″ · m=±.003 تا ±.008″ · t=±.005″" },
-  { code: "U", labelFa: "کلاس U (بازترین)", detailFa: "d=±.003 تا ±.010″ · m=±.005 تا ±.015″ · t=±.005″" },
+  { code: "A", labelFa: "کلاس A", detailFa: "m=±0.005mm · IC=±0.025mm · S1=±0.025mm" },
+  { code: "F", labelFa: "کلاس F", detailFa: "m=±0.005mm · IC=±0.013mm · S1=±0.025mm" },
+  { code: "C", labelFa: "کلاس C", detailFa: "m=±0.013mm · IC=±0.025mm · S1=±0.025mm" },
+  { code: "H", labelFa: "کلاس H", detailFa: "m=±0.013mm · IC=±0.013mm · S1=±0.025mm" },
+  { code: "E", labelFa: "کلاس E", detailFa: "m=±0.025mm · IC=±0.025mm · S1=±0.025mm" },
+  { code: "G", labelFa: "کلاس G (دقیق — پرداخت‌کاری/غیرآهنی/فولاد سخت‌کاری‌شده)", detailFa: "m=±0.025mm · IC=±0.025mm · S1=±0.13mm" },
+  { code: "J", labelFa: "کلاس J", detailFa: "m=±0.005mm · IC=±0.05 تا ±0.13mm · S1=±0.025mm" },
+  { code: "K", labelFa: "کلاس K", detailFa: "m=±0.013mm · IC=±0.05 تا ±0.13mm · S1=±0.025mm" },
+  { code: "L", labelFa: "کلاس L", detailFa: "m=±0.025mm · IC=±0.05 تا ±0.13mm · S1=±0.025mm" },
+  { code: "M", labelFa: "کلاس M (عمومی تا خشن‌کاری سنگین — رایج‌ترین)", detailFa: "m=±0.08 تا ±0.18mm · IC=±0.05 تا ±0.13mm · S1=±0.13mm" },
+  { code: "N", labelFa: "کلاس N", detailFa: "m=±0.08 تا ±0.18mm · IC=±0.05 تا ±0.13mm · S1=±0.025mm" },
+  { code: "U", labelFa: "کلاس U (خشن‌کاری)", detailFa: "m=±0.08 تا ±0.18mm · IC=±0.08 تا ±0.25mm · S1=±0.13mm" },
 ];
 
 export const insertGeometries: DesignationOption[] = [
