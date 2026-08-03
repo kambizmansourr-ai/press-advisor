@@ -14,7 +14,7 @@ export const engineCalcReference: Record<string, Record<string, CalcRefEntry>> =
   bulkForming: {
     "forging.upsetCylinder": {
       formula: "F = Kf · Ȳf · A1  (Ȳf = K·εⁿ/(1+n))",
-      useCase: "نیروی آهنگری آزاد (upsetting) یک استوانه توپر بین دو سندان تخت — مبنای انتخاب پرس برای فشردن شمش‌های ساده.",
+      useCase: "نیروی فورجینگ آزاد (upsetting) یک استوانه توپر بین دو سندان تخت — مبنای انتخاب پرس برای فشردن شمش‌های ساده.",
     },
     "forging.upsetSlab": {
       formula: "همانند upsetCylinder با فرض کرنش مسطح",
@@ -22,15 +22,15 @@ export const engineCalcReference: Record<string, Record<string, CalcRefEntry>> =
     },
     "forging.closedDie": {
       formula: "F = Kf · Ȳf · A_proj",
-      useCase: "تخمین اولیه نیروی آهنگری در قالب بسته (با پلیسه)؛ Kf از جدول پیچیدگی شکل انتخاب می‌شود. دقت ±۲۵ تا ۴۰٪، فقط برای انتخاب اولیه پرس.",
+      useCase: "تخمین اولیه نیروی فورجینگ در قالب بسته (با پلیسه)؛ Kf از جدول پیچیدگی شکل انتخاب می‌شود. دقت ±۲۵ تا ۴۰٪، فقط برای انتخاب اولیه پرس.",
     },
     "forging.flashDesign": {
       formula: "sf = 0.015·√A_proj ، bf = نسبت × sf",
-      useCase: "تعیین ضخامت و عرض پلیسه (flash land) قالب آهنگری بسته پیش از ساخت قالب.",
+      useCase: "تعیین ضخامت و عرض پلیسه (flash land) قالب فورجینگ بسته پیش از ساخت قالب.",
     },
     "forging.billet": {
       formula: "V_بیلت = V_قطعه + V_پلیسه + V_پوسته + V_راهگاه",
-      useCase: "محاسبه حجم و جرم بیلت اولیه لازم برای یک سیکل آهنگری قالب بسته.",
+      useCase: "محاسبه حجم و جرم بیلت اولیه لازم برای یک سیکل فورجینگ قالب بسته.",
     },
     "rolling.pass": {
       formula: "F = Ȳf_مؤثر · w · L  (L = √(R·d))",
@@ -99,7 +99,7 @@ export const engineCalcReference: Record<string, Record<string, CalcRefEntry>> =
     },
     "drawing.blankDiameter": {
       formula: "Db = √(d² + 4dh)  (با اصلاح برای شعاع گوشه کف)",
-      useCase: "محاسبه قطر بلانک اولیه لازم برای کشش یک فنجان استوانه‌ای به قطر و ارتفاع مشخص.",
+      useCase: "محاسبه قطر بلانک اولیه لازم برای کشش یک کاپ استوانه‌ای به قطر و ارتفاع مشخص.",
     },
     "drawing.feasibility": {
       useCase: "بررسی امکان‌پذیری کشش در یک مرحله بر اساس نسبت کشش (DR)، درصد کاهش و نسبت ضخامت به قطر بلانک.",

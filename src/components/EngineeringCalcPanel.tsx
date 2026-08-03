@@ -25,12 +25,22 @@ const ENUM_LABELS: Record<string, string> = {
   cylinder: "استوانه‌ای",
 };
 
+/**
+ * Vendored modules' `fa` labels/warnings use "آهنگری" and "فنجان" — the
+ * project's preferred terms are the transliterated technical ones
+ * ("فورجینگ", "کاپ"). The vendored .js files are kept byte-identical to
+ * their tested source, so the substitution happens here at render time.
+ */
+function fixTerm(text: string): string {
+  return text.replace(/آهنگری/g, "فورجینگ").replace(/فنجان/g, "کاپ");
+}
+
 function optionLabel(module: EngineModule, optionKey: string): string {
   if (ENUM_LABELS[optionKey]) return ENUM_LABELS[optionKey];
   for (const table of Object.values(module.data)) {
     if (Array.isArray(table)) continue;
     const entry = (table as Record<string, { fa?: string }>)[optionKey];
-    if (entry?.fa) return entry.fa;
+    if (entry?.fa) return fixTerm(entry.fa);
   }
   return optionKey;
 }
@@ -163,7 +173,7 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
                 groupKey === g.key ? "bg-accent text-white" : "bg-surface-2 text-muted hover:text-foreground"
               )}
             >
-              {g.fa}
+              {fixTerm(g.fa)}
             </button>
           ))}
         </div>
@@ -177,7 +187,7 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
           >
             {group.calcs.map((c) => (
               <option key={c.key} value={c.key}>
-                {c.fa}
+                {fixTerm(c.fa)}
               </option>
             ))}
           </select>
@@ -208,7 +218,7 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
               <option value="">— انتخاب ماده —</option>
               {Object.entries(presetTable).map(([key, m]) => (
                 <option key={key} value={key}>
-                  {m.fa} (K={m.K}, n={m.n})
+                  {fixTerm(m.fa)} (K={m.K}, n={m.n})
                 </option>
               ))}
             </select>
@@ -237,7 +247,7 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
                 const value = getOutputValue(result.data!, key);
                 return (
                   <div key={key} className="rounded-md bg-surface/60 px-2.5 py-2">
-                    <div className="text-[10px] text-muted">{label?.fa ?? key}</div>
+                    <div className="text-[10px] text-muted">{label?.fa ? fixTerm(label.fa) : key}</div>
                     <div className="text-sm font-bold break-words">
                       {formatValue(value)}
                       {label?.unit && label.unit !== "—" ? ` ${label.unit}` : ""}
@@ -252,7 +262,7 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
                 {result.data.steps.map((s, i) => (
                   <div key={i} className="flex flex-wrap items-baseline justify-between gap-x-2 text-[11px]">
                     <span className="text-muted">
-                      {s.label} <span className="text-muted/70">({s.expr})</span>
+                      {fixTerm(s.label)} <span className="text-muted/70">({s.expr})</span>
                     </span>
                     <span className="shrink-0 font-medium">
                       {formatValue(s.value)} {s.unit !== "—" ? s.unit : ""}
@@ -266,7 +276,7 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
               <ul className="mt-3 space-y-1 border-t border-border/60 pt-3">
                 {result.data.warnings.map((w, i) => (
                   <li key={i} className="text-[11px] text-warn">
-                    ⚠ {w}
+                    ⚠ {fixTerm(w)}
                   </li>
                 ))}
               </ul>
@@ -296,7 +306,7 @@ function FieldInput({
   if (field.unit === "select") {
     return (
       <label className="block">
-        <span className="mb-1 block text-xs font-medium text-muted">{field.fa}</span>
+        <span className="mb-1 block text-xs font-medium text-muted">{fixTerm(field.fa)}</span>
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -315,7 +325,7 @@ function FieldInput({
   return (
     <label className="block">
       <span className="mb-1 flex justify-between text-xs font-medium text-muted">
-        <span>{field.fa}</span>
+        <span>{fixTerm(field.fa)}</span>
         <span>{field.unit !== "—" ? field.unit : ""}</span>
       </span>
       <input
