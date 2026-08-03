@@ -74,8 +74,8 @@ export function RivetingIllustration({ diameter }: { diameter: number }) {
       <rect x={cx - shankR} y={70} width={shankR * 2} height={plateY - 70} className="fill-accent-soft stroke-accent" strokeWidth={1.5} />
       <path d={`M ${cx - headR} 70 Q ${cx} 50 ${cx + headR} 70 Z`} className="fill-accent-soft stroke-accent" strokeWidth={1.5} />
       <path d={`M ${cx - headR} ${plateY + 32} Q ${cx} ${plateY + 52} ${cx + headR} ${plateY + 32} Z`} className="fill-accent-soft stroke-accent" strokeWidth={1.5} />
-      <ForceArrowDown x={cx} y={20} len={14} />
-      <DimH x1={cx - shankR} x2={cx + shankR} y={plateY + 66} label="قطر پرچ" above={false} />
+      <ForceArrowDown x={cx} y={12} len={10} />
+      <DimH x1={cx - shankR} x2={cx + shankR} y={40} label="قطر پرچ" />
       <CenterLabel x={160} y={186} text="فرم‌دهی سرد سر پرچ برای اتصال دو ورق" className="fill-muted" />
     </IllustrationFrame>
   );
