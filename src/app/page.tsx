@@ -21,6 +21,7 @@ import {
 import { recommendPresses } from "@/rules/engine";
 import { formatNumber } from "@/lib/utils";
 import { AlertTriangle } from "lucide-react";
+import Image from "next/image";
 
 export default function Home() {
   const { register, watch, setValue } = useForm<WizardFormValues>({ defaultValues: wizardDefaultValues });
@@ -110,13 +111,39 @@ export default function Home() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <div className="mb-8 max-w-3xl">
-        <Badge tone="accent">سیستم پشتیبان تصمیم مهندسی</Badge>
-        <h1 className="mt-3 text-2xl font-extrabold sm:text-3xl">انتخاب هوشمند پرس ارس زنجان</h1>
-        <p className="mt-2 text-sm text-muted">
-          به‌جای انتخاب مستقیم مدل، کاربرد قطعه خود را مشخص کنید تا سیستم بر اساس فرمول‌های مهندسی واقعی (نیروی برش، خمش، پرس‌فیت و ...) و
-          مشخصات فنی کاتالوگ رسمی، بهترین دستگاه را با استدلال پیشنهاد دهد.
-        </p>
+      <div className="mb-8 grid grid-cols-1 items-center gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
+        <div className="max-w-3xl">
+          <Badge tone="accent">سیستم پشتیبان تصمیم مهندسی</Badge>
+          <h1 className="mt-3 text-2xl font-extrabold sm:text-3xl">انتخاب هوشمند پرس ارس زنجان</h1>
+          <p className="mt-2 text-sm text-muted">
+            به‌جای انتخاب مستقیم مدل، کاربرد قطعه خود را مشخص کنید تا سیستم بر اساس فرمول‌های مهندسی واقعی (نیروی برش، خمش، پرس‌فیت و ...) و
+            مشخصات فنی کاتالوگ رسمی، بهترین دستگاه را با استدلال پیشنهاد دهد.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <Card className="relative aspect-[3/4] overflow-hidden bg-white p-2">
+            <Image
+              src="/images/home/ph-press-pair.jpg"
+              alt="پرس‌های دستی ارس زنجان سری PH در دو سایز"
+              fill
+              className="object-contain p-2"
+              sizes="(min-width: 1024px) 210px, 50vw"
+              priority
+            />
+          </Card>
+          <Card className="relative aspect-[3/4] overflow-hidden bg-white p-2">
+            <Image
+              src="/images/home/ph-press-single.jpg"
+              alt="پرس دستی ارس زنجان مدل PH/5N"
+              fill
+              className="object-contain p-2"
+              sizes="(min-width: 1024px) 210px, 50vw"
+              priority
+            />
+          </Card>
+          <div className="col-span-2 text-center text-[11px] text-muted">پرس‌های دستی ارس زنجان — سری PH</div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
