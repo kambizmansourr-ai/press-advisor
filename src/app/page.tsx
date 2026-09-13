@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { WizardFormValues, wizardDefaultValues } from "@/components/wizard/types";
 import { ApplicationPicker } from "@/components/wizard/ApplicationPicker";
 import { DynamicInputs } from "@/components/wizard/DynamicInputs";
@@ -23,8 +23,18 @@ import { cn, formatNumber } from "@/lib/utils";
 import { AlertTriangle } from "lucide-react";
 import Image from "next/image";
 
+const HERO_SLIDES = [
+  { src: "/images/home/ph-press-single.jpg", alt: "پرس دستی ارس زنجان مدل PH/5N", titleFa: "پرس دستی PH/5N" },
+  { src: "/images/home/ph-press-pair.jpg", alt: "پرس‌های دستی ارس زنجان سری PH در دو سایز", titleFa: "پرس‌های دستی سری PH — دو سایز" },
+];
+
 export default function Home() {
   const { register, watch, setValue } = useForm<WizardFormValues>({ defaultValues: wizardDefaultValues });
+  const [slide, setSlide] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setSlide((s) => (s + 1) % HERO_SLIDES.length), 5000);
+    return () => clearInterval(t);
+  }, [slide]);
   // react-hook-form's watch() intentionally opts this component out of React Compiler
   // auto-memoization; force-recalculation below is handled explicitly via useMemo.
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -179,20 +189,42 @@ export default function Home() {
                 sizes="(min-width: 1024px) 420px, 100vw"
               />
             ) : (
-              <Image
-                src="/images/home/ph-press-single.jpg"
-                alt="پرس دستی ارس زنجان مدل PH/5N"
-                fill
-                className="object-contain object-center p-3 pb-24"
-                sizes="(min-width: 1024px) 420px, 100vw"
-                priority
-              />
+              HERO_SLIDES.map((s, i) => (
+                <Image
+                  key={s.src}
+                  src={s.src}
+                  alt={s.alt}
+                  fill
+                  className={cn(
+                    "object-contain object-center p-3 pb-24 transition-opacity duration-700",
+                    i === slide ? "opacity-100" : "opacity-0"
+                  )}
+                  sizes="(min-width: 1024px) 420px, 100vw"
+                  priority={i === 0}
+                />
+              ))
             )}
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-4 text-white">
               <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/80">Aras Zanjan • AZCO</div>
-              <div className="mt-0.5 text-base font-extrabold">پرس‌های دستی سری PH</div>
+              <div className="mt-0.5 text-base font-extrabold">{application ? "پرس‌های دستی سری PH" : HERO_SLIDES[slide].titleFa}</div>
               <div className="text-[11px] text-white/85">ساخت ارس زنجان — بدون نیاز به برق یا هوای فشرده</div>
             </div>
+            {!application && (
+              <div className="absolute start-3 top-3 flex gap-1.5">
+                {HERO_SLIDES.map((s, i) => (
+                  <button
+                    key={s.src}
+                    type="button"
+                    aria-label={s.titleFa}
+                    onClick={() => setSlide(i)}
+                    className={cn(
+                      "h-2 rounded-full border border-black/10 transition-all",
+                      i === slide ? "w-6 bg-accent" : "w-2 bg-black/20 hover:bg-black/40"
+                    )}
+                  />
+                ))}
+              </div>
+            )}
           </Card>
 
           <Card className="p-5">
