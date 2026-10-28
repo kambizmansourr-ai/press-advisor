@@ -1,7 +1,11 @@
+"use client";
+
 import { CenterLabel, DimH, DimV, ForceArrowDown, IllustrationFrame, num } from "./primitives";
+import { useLang } from "@/lib/i18n";
 
 /** forging.upsetCylinder / upsetSlab — a billet compressed between two flat platens. */
 export function UpsetIllustration({ values, slab }: { values: Record<string, string>; slab?: boolean }) {
+  const { t } = useLang();
   const h0 = num(values, "h0", 40);
   const h1 = num(values, slab ? "h1" : "h1", Math.max(h0 * 0.6, 10));
   const w0 = slab ? num(values, "w", 30) : num(values, "d0", 30);
@@ -38,13 +42,14 @@ export function UpsetIllustration({ values, slab }: { values: Record<string, str
       <DimV y1={bottomY - h0px} y2={bottomY} x={cx - w0px / 2 - 14} label={slab ? "h0" : "h0"} />
       <DimV y1={bottomY - h1px} y2={bottomY} x={cx + w1px / 2 + 14} label="h1" left={false} />
       <DimH x1={cx - w0px / 2} x2={cx + w0px / 2} y={bottomY - h0px - 8} label={slab ? "w0" : "d0"} />
-      <CenterLabel x={cx} y={bottomY + 24} text={slab ? "فشردن تیغه (کرنش مسطح)" : "فشردن استوانه بین دو سندان تخت"} className="fill-muted" />
+      <CenterLabel x={cx} y={bottomY + 24} text={slab ? t("فشردن تیغه (کرنش مسطح)", "Upsetting a slab (plane strain)") : t("فشردن استوانه بین دو سندان تخت", "Upsetting a cylinder between flat platens")} className="fill-muted" />
     </IllustrationFrame>
   );
 }
 
 /** forging.closedDie — projected area clamped between two die halves, with a flash line. */
 export function ClosedDieIllustration({ values }: { values: Record<string, string> }) {
+  const { t } = useLang();
   const area = num(values, "projectedArea", 2000);
   const halfWidth = Math.min(120, Math.max(40, Math.sqrt(area) * 1.4));
   const cx = 160;
@@ -67,14 +72,15 @@ export function ClosedDieIllustration({ values }: { values: Record<string, strin
       />
       <line x1={cx - halfWidth - 20} y1={110} x2={cx + halfWidth + 20} y2={110} className="stroke-warn" strokeDasharray="3 2" strokeWidth={1} />
       <ForceArrowDown x={cx} y={40} len={16} />
-      <DimH x1={cx - halfWidth} x2={cx + halfWidth} y={72} label="سطح تصویرشده (با پلیسه)" />
-      <CenterLabel x={cx} y={178} text="فورجینگ قالب بسته — پلیسه در خط جدایش" className="fill-muted" />
+      <DimH x1={cx - halfWidth} x2={cx + halfWidth} y={72} label={t("سطح تصویرشده (با پلیسه)", "Projected area (incl. flash)")} />
+      <CenterLabel x={cx} y={178} text={t("فورجینگ قالب بسته — پلیسه در خط جدایش", "Closed-die forging — flash at the parting line")} className="fill-muted" />
     </IllustrationFrame>
   );
 }
 
 /** forging.flashDesign — close-up on the flash land at the parting line. */
 export function FlashDesignIllustration({ values }: { values: Record<string, string> }) {
+  const { t } = useLang();
   const ratio = num(values, "ratio", 3);
   const sf = 8;
   const bf = Math.min(60, Math.max(16, sf * ratio * 1.2));
@@ -90,13 +96,14 @@ export function FlashDesignIllustration({ values }: { values: Record<string, str
       <path d={`M 280 ${cy - sf / 2} H ${cx + bf / 2} L ${cx + bf / 2 + 20} ${cy - 20} L 280 ${cy - 20} Z`} className="fill-accent-soft stroke-accent" strokeWidth={1} />
       <DimV y1={cy - sf / 2} y2={cy + sf / 2} x={cx + bf / 2 + 16} label="sf" left={false} />
       <DimH x1={cx - bf / 2} x2={cx + bf / 2} y={cy + sf / 2 + 14} label="bf" above={false} />
-      <CenterLabel x={cx} y={30} text="طراحی زمین پلیسه (flash land)" className="fill-muted" />
+      <CenterLabel x={cx} y={30} text={t("طراحی زمین پلیسه (flash land)", "Flash land design")} className="fill-muted" />
     </IllustrationFrame>
   );
 }
 
 /** forging.billet — a round bar billet sized for one forging cycle. */
 export function BilletIllustration({ values }: { values: Record<string, string> }) {
+  const { t } = useLang();
   const barDia = num(values, "barDiameter", 40);
   const rx = Math.min(24, Math.max(10, barDia / 3));
   const length = 140;
@@ -107,8 +114,8 @@ export function BilletIllustration({ values }: { values: Record<string, string> 
     <IllustrationFrame>
       <rect x={cx - length / 2} y={cy - rx} width={length} height={rx * 2} rx={rx} className="fill-accent-soft stroke-accent" strokeWidth={1.5} />
       <ellipse cx={cx - length / 2} cy={cy} rx={rx * 0.35} ry={rx} className="fill-surface stroke-accent" strokeWidth={1} />
-      <DimH x1={cx - length / 2} x2={cx + length / 2} y={cy + rx + 16} label="طول بیلت" above={false} />
-      <DimV y1={cy - rx} y2={cy + rx} x={cx - length / 2 - 14} label="قطر" />
+      <DimH x1={cx - length / 2} x2={cx + length / 2} y={cy + rx + 16} label={t("طول بیلت", "Billet length")} above={false} />
+      <DimV y1={cy - rx} y2={cy + rx} x={cx - length / 2 - 14} label={t("قطر", "Diameter")} />
       <path d="M 230 100 L 270 100" className="stroke-muted" strokeWidth={1.5} markerEnd="url(#arrow)" />
       <defs>
         <marker id="arrow" markerWidth={8} markerHeight={8} refX={6} refY={3} orient="auto">
@@ -116,13 +123,14 @@ export function BilletIllustration({ values }: { values: Record<string, string> 
         </marker>
       </defs>
       <path d="M 275 82 L 300 82 Q 308 82 308 90 L 308 110 Q 308 118 300 118 L 275 118 Z" className="fill-surface-2 stroke-border" />
-      <CenterLabel x={292} y={100} text="قطعه" className="fill-muted" />
+      <CenterLabel x={292} y={100} text={t("قطعه", "Part")} className="fill-muted" />
     </IllustrationFrame>
   );
 }
 
 /** rolling.pass / maxDraft / schedule — flat strip drawn through two work rolls. */
 export function RollingPassIllustration({ values }: { values: Record<string, string> }) {
+  const { t } = useLang();
   const t0 = num(values, "t0", 10);
   const t1 = num(values, "t1", 7);
   const R = num(values, "R", 150);
@@ -144,13 +152,14 @@ export function RollingPassIllustration({ values }: { values: Record<string, str
       />
       <DimV y1={cy - t0px / 2} y2={cy + t0px / 2} x={30} label="t0" />
       <DimV y1={cy - t1px / 2} y2={cy + t1px / 2} x={290} label="t1" left={false} />
-      <CenterLabel x={cx} y={172} text="پاس نورد تخت بین دو غلتک" className="fill-muted" />
+      <CenterLabel x={cx} y={172} text={t("پاس نورد تخت بین دو غلتک", "Flat rolling pass between two rolls")} className="fill-muted" />
     </IllustrationFrame>
   );
 }
 
 /** extrusion.pressure / byConstant — ram pushing a billet through a die to a smaller product. */
 export function ExtrusionIllustration({ values }: { values: Record<string, string> }) {
+  const { t } = useLang();
   const D0 = num(values, "D0", Math.sqrt(num(values, "A0", 2500)));
   const Df = num(values, "Df", Math.sqrt(num(values, "Af", 700)));
   const rD0 = Math.min(56, Math.max(24, D0 * 0.9));
@@ -165,13 +174,14 @@ export function ExtrusionIllustration({ values }: { values: Record<string, strin
       <rect x={230} y={cy - rDf} width={60} height={rDf * 2} className="fill-accent-soft stroke-accent" strokeWidth={1.5} />
       <DimV y1={cy - rD0} y2={cy + rD0} x={62} label="D0" />
       <DimV y1={cy - rDf} y2={cy + rDf} x={260} label="Df" left={false} />
-      <CenterLabel x={160} y={178} text="اکستروژن مستقیم بیلت از میان قالب" className="fill-muted" />
+      <CenterLabel x={160} y={178} text={t("اکستروژن مستقیم بیلت از میان قالب", "Direct extrusion of a billet through a die")} className="fill-muted" />
     </IllustrationFrame>
   );
 }
 
 /** drawing.wire / schedule / maxReduction — wire pulled through a conical die. */
 export function WireDrawIllustration({ values }: { values: Record<string, string> }) {
+  const { t } = useLang();
   const D0 = num(values, "D0", 6);
   const Df = num(values, "Df", num(values, "DFinal", 4.5));
   const alpha = num(values, "alpha", 12);
@@ -191,7 +201,7 @@ export function WireDrawIllustration({ values }: { values: Record<string, string
       </text>
       <DimV y1={cy - rD0} y2={cy + rD0} x={20} label="D0" />
       <DimV y1={cy - rDf} y2={cy + rDf} x={300} label="Df" left={false} />
-      <CenterLabel x={160} y={178} text="کشش مفتول/میله از قالب مخروطی" className="fill-muted" />
+      <CenterLabel x={160} y={178} text={t("کشش مفتول/میله از قالب مخروطی", "Wire/rod drawing through a conical die")} className="fill-muted" />
     </IllustrationFrame>
   );
 }

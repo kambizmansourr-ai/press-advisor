@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactElement } from "react";
+import { useLang } from "@/lib/i18n";
 import { CenterLabel, IllustrationFrame } from "./primitives";
 
 const RHOMBUS_ANGLE: Record<string, number> = { C: 80, D: 55, E: 75, M: 86, V: 35 };
@@ -28,6 +31,7 @@ function parallelogramPoints(cx: number, cy: number, w: number, h: number, angle
 
 /** Live-ish (parametrized by shape code) schematic of the insert's top-view outline. */
 export function InsertShapeIllustration({ shapeCode }: { shapeCode: string }) {
+  const { t } = useLang();
   const cx = 160;
   const cy = 95;
   const r = 55;
@@ -71,7 +75,7 @@ export function InsertShapeIllustration({ shapeCode }: { shapeCode: string }) {
     <IllustrationFrame>
       {shapeEl}
       <circle cx={cx} cy={cy} r={4} className="fill-surface stroke-border" strokeWidth={1} />
-      <CenterLabel x={cx} y={178} text={`نمای بالای اینسرت — کد شکل ${shapeCode}`} className="fill-muted" />
+      <CenterLabel x={cx} y={178} text={t(`نمای بالای اینسرت — کد شکل ${shapeCode}`, `Insert top view — shape code ${shapeCode}`)} className="fill-muted" />
     </IllustrationFrame>
   );
 }

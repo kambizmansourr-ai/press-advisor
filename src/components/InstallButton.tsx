@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
+import { useLang } from "@/lib/i18n";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -9,6 +10,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function InstallButton() {
+  const { t } = useLang();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(false);
 
@@ -41,10 +43,10 @@ export function InstallButton() {
         setDeferredPrompt(null);
       }}
       className="flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-xs font-medium text-white hover:bg-accent-strong"
-      title="نصب به‌صورت اپلیکیشن مستقل با آیکون اختصاصی"
+      title={t("نصب به‌صورت اپلیکیشن مستقل با آیکون اختصاصی", "Install as a standalone app with its own icon")}
     >
       <Download size={13} />
-      <span className="hidden sm:inline">نصب اپلیکیشن</span>
+      <span className="hidden sm:inline">{t("نصب اپلیکیشن", "Install app")}</span>
     </button>
   );
 }

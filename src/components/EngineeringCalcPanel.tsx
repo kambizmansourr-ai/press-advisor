@@ -5,25 +5,26 @@ import type { EngineField, EngineModule, EngineResult } from "@/calculators/engi
 import { getCalcRef } from "@/data/calcReference";
 import { getCalcIllustration } from "@/data/calcIllustrations";
 import { cn } from "@/lib/utils";
+import { useLang, formatNumberFor, type Lang } from "@/lib/i18n";
 import { BookOpen } from "lucide-react";
 
 // static translations for the handful of plain enum fields not backed by a data table
-const ENUM_LABELS: Record<string, string> = {
-  direct: "مستقیم",
-  indirect: "غیرمستقیم",
-  wire: "مفتول",
-  rod: "میله",
-  blanking: "بلانکینگ",
-  punching: "پانچینگ",
-  perpendicular: "عمود بر نورد",
-  parallel: "موازی نورد",
-  metric: "متریک",
-  imperial: "امپریال",
-  round: "گرد",
-  rect: "مستطیلی",
-  custom: "سفارشی",
-  plate: "صفحه‌ای",
-  cylinder: "استوانه‌ای",
+const ENUM_LABELS: Record<string, { fa: string; en: string }> = {
+  direct: { fa: "مستقیم", en: "Direct" },
+  indirect: { fa: "غیرمستقیم", en: "Indirect" },
+  wire: { fa: "مفتول", en: "Wire" },
+  rod: { fa: "میله", en: "Rod" },
+  blanking: { fa: "بلانکینگ", en: "Blanking" },
+  punching: { fa: "پانچینگ", en: "Punching" },
+  perpendicular: { fa: "عمود بر نورد", en: "Perpendicular to rolling" },
+  parallel: { fa: "موازی نورد", en: "Parallel to rolling" },
+  metric: { fa: "متریک", en: "Metric" },
+  imperial: { fa: "امپریال", en: "Imperial" },
+  round: { fa: "گرد", en: "Round" },
+  rect: { fa: "مستطیلی", en: "Rectangular" },
+  custom: { fa: "سفارشی", en: "Custom" },
+  plate: { fa: "صفحه‌ای", en: "Plate" },
+  cylinder: { fa: "استوانه‌ای", en: "Cylindrical" },
 };
 
 /**
@@ -36,23 +37,24 @@ function fixTerm(text: string): string {
   return text.replace(/آهنگری/g, "فورجینگ").replace(/فنجان/g, "کاپ");
 }
 
-function optionLabel(module: EngineModule, optionKey: string): string {
-  if (ENUM_LABELS[optionKey]) return ENUM_LABELS[optionKey];
+function optionLabel(module: EngineModule, optionKey: string, lang: Lang): string {
+  const enumLabel = ENUM_LABELS[optionKey];
+  if (enumLabel) return lang === "en" ? enumLabel.en : enumLabel.fa;
   for (const table of Object.values(module.data)) {
     if (Array.isArray(table)) continue;
-    const entry = (table as Record<string, { fa?: string }>)[optionKey];
-    if (entry?.fa) return fixTerm(entry.fa);
+    const entry = (table as Record<string, { fa?: string; en?: string }>)[optionKey];
+    if (entry?.fa) return lang === "en" ? (entry.en ?? optionKey) : fixTerm(entry.fa);
   }
   return optionKey;
 }
 
 /** first data table in the module whose entries carry both K and n (flow-curve constants) */
-function findMaterialPresetTable(module: EngineModule): Record<string, { fa: string; K: number; n: number }> | null {
+function findMaterialPresetTable(module: EngineModule): Record<string, { fa: string; en?: string; K: number; n: number }> | null {
   for (const table of Object.values(module.data)) {
     if (Array.isArray(table)) continue;
     const first = Object.values(table)[0] as { K?: number; n?: number } | undefined;
     if (first && typeof first.K === "number" && typeof first.n === "number") {
-      return table as Record<string, { fa: string; K: number; n: number }>;
+      return table as Record<string, { fa: string; en?: string; K: number; n: number }>;
     }
   }
   return null;
@@ -83,17 +85,17 @@ function resolveCalcFn(
   return null;
 }
 
-function formatValue(v: unknown): string {
+function formatValue(v: unknown, lang: Lang, bi: (s: string) => string): string {
   if (v == null) return "—";
-  if (Array.isArray(v)) return v.map((x) => formatValue(x)).join(" – ");
-  if (typeof v === "boolean") return v ? "بله" : "خیر";
+  if (Array.isArray(v)) return v.map((x) => formatValue(x, lang, bi)).join(" – ");
+  if (typeof v === "boolean") return v ? (lang === "en" ? "Yes" : "بله") : lang === "en" ? "No" : "خیر";
   if (typeof v === "number") {
     if (!Number.isFinite(v)) return "—";
     const abs = Math.abs(v);
     const decimals = abs >= 100 ? 1 : abs >= 1 ? 2 : 4;
-    return v.toLocaleString("fa-IR", { maximumFractionDigits: decimals });
+    return formatNumberFor(lang, v, decimals);
   }
-  return String(v);
+  return bi(String(v));
 }
 
 /**
@@ -112,6 +114,11 @@ function getOutputValue(data: EngineResult, key: string): unknown {
 }
 
 export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModule; moduleKey: string }) {
+  const { lang, t, bi } = useLang();
+  /** module-supplied label: the Persian half gets the project's preferred terms, English is used as-is */
+  const loc = (fa: string, en: string) => (lang === "en" ? en : fixTerm(fa));
+  /** module-supplied combined "فارسی / English" string */
+  const locBi = (s: string) => (lang === "en" ? bi(s) : fixTerm(bi(s)));
   const groups = module.UI.groups;
   const [groupKey, setGroupKey] = useState(groups[0].key);
   const group = useMemo(() => groups.find((g) => g.key === groupKey)!, [groups, groupKey]);
@@ -150,7 +157,7 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
     setValues((prev) => ({ ...prev, K: String(m.K), n: String(m.n) }));
   };
 
-  const result: { data: EngineResult | null; error: string | null } = useMemo(() => {
+  const result: { data: EngineResult | null; error: string | null; notFound?: boolean } = useMemo(() => {
     const input: Record<string, string | number> = {};
     for (const f of calc.fields) {
       const raw = values[f.key];
@@ -158,7 +165,7 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
       input[f.key] = f.unit === "select" ? raw : Number(raw);
     }
     const fn = resolveCalcFn(module, groupKey, calcKey);
-    if (!fn) return { data: null, error: `تابع محاسبه «${calcKey}» یافت نشد` };
+    if (!fn) return { data: null, error: calcKey, notFound: true };
     try {
       return { data: fn(input), error: null };
     } catch (e) {
@@ -179,13 +186,13 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
                 groupKey === g.key ? "bg-accent text-white" : "bg-surface-2 text-muted hover:text-foreground"
               )}
             >
-              {fixTerm(g.fa)}
+              {loc(g.fa, g.en)}
             </button>
           ))}
         </div>
 
         <label className="block">
-          <span className="mb-1 block text-xs font-medium text-muted">نوع محاسبه</span>
+          <span className="mb-1 block text-xs font-medium text-muted">{t("نوع محاسبه", "Calculation type")}</span>
           <select
             value={calcKey}
             onChange={(e) => selectCalc(e.target.value)}
@@ -193,7 +200,7 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
           >
             {group.calcs.map((c) => (
               <option key={c.key} value={c.key}>
-                {fixTerm(c.fa)}
+                {loc(c.fa, c.en)}
               </option>
             ))}
           </select>
@@ -203,10 +210,10 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
           <div className="flex gap-2 rounded-lg border border-border bg-surface-2 p-3">
             <BookOpen size={14} className="mt-0.5 shrink-0 text-accent" />
             <div className="text-xs">
-              <p className="text-muted">{calcRef.useCase}</p>
+              <p className="text-muted">{lang === "en" ? calcRef.useCaseEn : calcRef.useCase}</p>
               {calcRef.formula && (
                 <p className="mt-1 rounded bg-surface/70 px-2 py-1 font-mono text-[11px] leading-relaxed" dir="ltr">
-                  {calcRef.formula}
+                  {lang === "en" ? (calcRef.formulaEn ?? calcRef.formula) : calcRef.formula}
                 </p>
               )}
             </div>
@@ -217,16 +224,16 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
 
         {hasBareKN && presetTable && (
           <label className="block">
-            <span className="mb-1 block text-xs font-medium text-muted">پیش‌فرض K و n از جدول مواد (اختیاری)</span>
+            <span className="mb-1 block text-xs font-medium text-muted">{t("پیش‌فرض K و n از جدول مواد (اختیاری)", "K and n preset from the material table (optional)")}</span>
             <select
               onChange={(e) => e.target.value && applyMaterialPreset(e.target.value)}
               defaultValue=""
               className="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm"
             >
-              <option value="">— انتخاب ماده —</option>
+              <option value="">{t("— انتخاب ماده —", "— Select material —")}</option>
               {Object.entries(presetTable).map(([key, m]) => (
                 <option key={key} value={key}>
-                  {fixTerm(m.fa)} (K={m.K}, n={m.n})
+                  {loc(m.fa, m.en ?? m.fa)} (K={m.K}, n={m.n})
                 </option>
               ))}
             </select>
@@ -243,7 +250,10 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
       <div className="min-w-0 rounded-lg border border-accent/30 bg-accent-soft p-4 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto thin-scroll">
         {result.error && (
           <div className="rounded-md bg-danger-soft p-3 text-xs text-danger">
-            ورودی نامعتبر / محاسبه ناموفق: {result.error}
+            {t("ورودی نامعتبر / محاسبه ناموفق: ", "Invalid input / calculation failed: ")}
+            {result.notFound
+              ? t(`تابع محاسبه «${result.error}» یافت نشد`, `Calculation function "${result.error}" not found`)
+              : bi(result.error ?? "")}
           </div>
         )}
 
@@ -255,9 +265,9 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
                 const value = getOutputValue(result.data!, key);
                 return (
                   <div key={key} className="rounded-md bg-surface/60 px-2.5 py-2">
-                    <div className="text-[10px] text-muted">{label?.fa ? fixTerm(label.fa) : key}</div>
+                    <div className="text-[10px] text-muted">{label?.fa ? loc(label.fa, label.en) : key}</div>
                     <div className="text-sm font-bold break-words">
-                      {formatValue(value)}
+                      {formatValue(value, lang, bi)}
                       {label?.unit && label.unit !== "—" ? ` ${label.unit}` : ""}
                     </div>
                   </div>
@@ -270,10 +280,10 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
                 {result.data.steps.map((s, i) => (
                   <div key={i} className="flex flex-wrap items-baseline justify-between gap-x-2 text-[11px]">
                     <span className="text-muted">
-                      {fixTerm(s.label)} <span className="text-muted/70">({s.expr})</span>
+                      {locBi(s.label)} <span className="text-muted/70">({bi(s.expr)})</span>
                     </span>
                     <span className="shrink-0 font-medium">
-                      {formatValue(s.value)} {s.unit !== "—" ? s.unit : ""}
+                      {formatValue(s.value, lang, bi)} {s.unit !== "—" ? s.unit : ""}
                     </span>
                   </div>
                 ))}
@@ -284,7 +294,7 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
               <ul className="mt-3 space-y-1 border-t border-border/60 pt-3">
                 {result.data.warnings.map((w, i) => (
                   <li key={i} className="text-[11px] text-warn">
-                    ⚠ {fixTerm(w)}
+                    ⚠ {locBi(w)}
                   </li>
                 ))}
               </ul>
@@ -293,7 +303,7 @@ export function EngineeringCalcPanel({ module, moduleKey }: { module: EngineModu
         )}
 
         {!result.error && !result.data && (
-          <p className="text-sm text-muted">مقادیر ورودی را وارد کنید تا نتیجه محاسبه نمایش داده شود.</p>
+          <p className="text-sm text-muted">{t("مقادیر ورودی را وارد کنید تا نتیجه محاسبه نمایش داده شود.", "Enter input values to see the calculation result.")}</p>
         )}
       </div>
     </div>
@@ -311,10 +321,12 @@ function FieldInput({
   value: string;
   onChange: (v: string) => void;
 }) {
+  const { lang } = useLang();
+  const label = lang === "en" ? field.en : fixTerm(field.fa);
   if (field.unit === "select") {
     return (
       <label className="block">
-        <span className="mb-1 block text-xs font-medium text-muted">{fixTerm(field.fa)}</span>
+        <span className="mb-1 block text-xs font-medium text-muted">{label}</span>
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -323,7 +335,7 @@ function FieldInput({
           <option value="">—</option>
           {field.options?.map((opt) => (
             <option key={opt} value={opt}>
-              {optionLabel(module, opt)}
+              {optionLabel(module, opt, lang)}
             </option>
           ))}
         </select>
@@ -333,7 +345,7 @@ function FieldInput({
   return (
     <label className="block">
       <span className="mb-1 flex justify-between text-xs font-medium text-muted">
-        <span>{fixTerm(field.fa)}</span>
+        <span>{label}</span>
         <span>{field.unit !== "—" ? field.unit : ""}</span>
       </span>
       <input

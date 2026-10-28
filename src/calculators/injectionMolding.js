@@ -157,8 +157,8 @@
     submarine: { fa: 'زیرگیت',      en: 'Submarine / tunnel', dia: [0.8, 1.5], angle: [30, 45] },
     fan:       { fa: 'گیت پره‌ای',  en: 'Fan gate',         depthFactor: [0.3, 0.6] },
     film:      { fa: 'گیت فیلمی',   en: 'Film / flash gate', depth: [0.2, 0.6] },
-    diaphragm: { fa: 'گیت دیسکی',   en: 'Diaphragm gate',   note: 'قطعات استوانه‌ای هم‌محور' },
-    direct:    { fa: 'گیت مستقیم',  en: 'Direct / sprue gate', note: 'تک‌حفره‌ای بزرگ' },
+    diaphragm: { fa: 'گیت دیسکی',   en: 'Diaphragm gate',   note: 'قطعات استوانه‌ای هم‌محور / concentric cylindrical parts' },
+    direct:    { fa: 'گیت مستقیم',  en: 'Direct / sprue gate', note: 'تک‌حفره‌ای بزرگ / large single-cavity parts' },
   };
 
   // ────────────────────────────────────────────────────────────────────────
@@ -306,7 +306,7 @@
         equivalentCavityPressure_MPa: band.tonsPerIn2 * MPA_PER_TON_IN2,
         materialLtMax: p ? p.ltMax : null,
         utilisation: p ? lt / p.ltMax : null, warnings,
-        steps: [Step('نسبت L/T', 'L / t', lt, '—')],
+        steps: [Step('نسبت L/T / L/T ratio', 'L / t', lt, '—')],
       };
     },
 
@@ -386,8 +386,8 @@
         machineUtilisation: utilisation,
         recommendedMachine_metricTons: recommendedMachine, warnings,
         steps: [
-          bandResult ? Step('روش باند L/T', 'F = A[in²] × tons/in²', bandResult.usTons, 'US ton') : null,
-          pressureResult ? Step('روش فشار حفره', 'F = p × A / 1000', pressureResult.kN, 'kN') : null,
+          bandResult ? Step('روش باند L/T / L/T band method', 'F = A[in²] × tons/in²', bandResult.usTons, 'US ton') : null,
+          pressureResult ? Step('روش فشار حفره / cavity-pressure method', 'F = p × A / 1000', pressureResult.kN, 'kN') : null,
           Step('نیروی لازم / required', `governing × ${SF}`, required_kN, 'kN'),
         ].filter(Boolean),
       };
@@ -587,9 +587,9 @@
         waterDeltaT_K: dTw, coolantFlow_m3s: Vdot_m3s, coolantFlow_Lmin: Vdot_Lmin,
         warnings,
         steps: [
-          Step('آنتالپی ویژه', 'cp·(Tm − Te) + Hf', specificEnthalpy, 'J/kg'),
-          Step('گرمای هر سیکل', 'm · Δh', Q, 'J'),
-          Step('توان حرارتی', 'Q / t_cycle', Qdot, 'W'),
+          Step('آنتالپی ویژه / specific enthalpy', 'cp·(Tm − Te) + Hf', specificEnthalpy, 'J/kg'),
+          Step('گرمای هر سیکل / heat per cycle', 'm · Δh', Q, 'J'),
+          Step('توان حرارتی / thermal power', 'Q / t_cycle', Qdot, 'W'),
           Step('دبی آب / coolant flow', 'Q̇/(ρ·cp·ΔT)', Vdot_Lmin, 'L/min'),
         ],
       };

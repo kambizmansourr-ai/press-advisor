@@ -1,7 +1,11 @@
+"use client";
+
 import { CenterLabel, DimH, DimV, ForceArrowDown, IllustrationFrame, num } from "./primitives";
+import { useLang } from "@/lib/i18n";
 
 /** cutting.operation / clearance / force / guillotine (straight punch case) — punch, sheet, die with clearance gap. */
 export function PunchDieIllustration({ values }: { values: Record<string, string> }) {
+  const { t: tr } = useLang();
   const t = num(values, "t", 2);
   const tpx = Math.min(30, Math.max(8, t * 8));
   const size = num(values, "size", 20);
@@ -20,18 +24,19 @@ export function PunchDieIllustration({ values }: { values: Record<string, string
         strokeWidth={1.5}
       />
       <ForceArrowDown x={cx} y={16} len={12} />
-      <DimH x1={cx - halfW} x2={cx + halfW} y={sheetY - tpx / 2 - 10} label="اندازه اسمی" />
+      <DimH x1={cx - halfW} x2={cx + halfW} y={sheetY - tpx / 2 - 10} label={tr("اندازه اسمی", "Nominal size")} />
       <DimV y1={sheetY - tpx / 2} y2={sheetY + tpx / 2} x={30} label="t" />
       <text x={cx + halfW + c + 6} y={sheetY + 3} className="fill-muted" style={{ fontSize: 9 }}>
         c
       </text>
-      <CenterLabel x={cx} y={186} text="سنبه، ورق و ماتریس با لقی c بین آن‌ها" className="fill-muted" />
+      <CenterLabel x={cx} y={186} text={tr("سنبه، ورق و ماتریس با لقی c بین آن‌ها", "Punch, sheet and die with clearance c")} className="fill-muted" />
     </IllustrationFrame>
   );
 }
 
 /** cutting.stripLayout — repeated blanks laid out along a feed strip. */
 export function StripLayoutIllustration({ values }: { values: Record<string, string> }) {
+  const { t } = useLang();
   const rows = Math.max(1, Math.min(3, Math.round(num(values, "rows", 1))));
   const cx0 = 60;
   const partH = 100 / rows;
@@ -53,15 +58,16 @@ export function StripLayoutIllustration({ values }: { values: Record<string, str
           />
         ))
       )}
-      <DimH x1={cx0} x2={cx0 + 80} y={165} label="گام (pitch)" above={false} />
-      <DimV y1={40} y2={160} x={18} label="عرض" />
-      <CenterLabel x={160} y={186} text="چیدمان قطعات روی نوار فلزی" className="fill-muted" />
+      <DimH x1={cx0} x2={cx0 + 80} y={165} label={t("گام (pitch)", "Pitch")} above={false} />
+      <DimV y1={40} y2={160} x={18} label={t("عرض", "Width")} />
+      <CenterLabel x={160} y={186} text={t("چیدمان قطعات روی نوار فلزی", "Blank layout on the strip")} className="fill-muted" />
     </IllustrationFrame>
   );
 }
 
 /** cutting.guillotine — angled blade shearing a sheet edge. */
 export function GuillotineIllustration({ values }: { values: Record<string, string> }) {
+  const { t: tr } = useLang();
   const t = num(values, "t", 3);
   const tpx = Math.min(36, Math.max(10, t * 6));
   const rake = num(values, "rakeAngle_deg", 4);
@@ -73,15 +79,16 @@ export function GuillotineIllustration({ values }: { values: Record<string, stri
       <path d={`M ${230 - skew} 60 L 250 60 L 220 ${100 + tpx + 20} L 200 ${100 + tpx + 20} Z`} className="fill-surface-2 stroke-border" strokeWidth={1.5} />
       <DimV y1={100} y2={100 + tpx} x={30} label="t" />
       <text x={235} y={50} textAnchor="middle" className="fill-muted" style={{ fontSize: 9 }}>
-        زاویه تیغه φ≈{rake.toFixed(0)}°
+        {tr("زاویه تیغه φ≈", "Blade angle φ≈")}{rake.toFixed(0)}°
       </text>
-      <CenterLabel x={160} y={186} text="برش با تیغه گیوتین زاویه‌دار" className="fill-muted" />
+      <CenterLabel x={160} y={186} text={tr("برش با تیغه گیوتین زاویه‌دار", "Shearing with an angled guillotine blade")} className="fill-muted" />
     </IllustrationFrame>
   );
 }
 
 /** bending.allowance / force — V-die bend to a given inside radius and angle. */
 export function VBendIllustration({ values }: { values: Record<string, string> }) {
+  const { t: tr } = useLang();
   const t = Math.min(14, Math.max(4, num(values, "t", 2) * 3));
   const angle = num(values, "angle_deg", 90);
   const cx = 160;
@@ -102,13 +109,14 @@ export function VBendIllustration({ values }: { values: Record<string, string> }
         R, α≈{angle.toFixed(0)}°
       </text>
       <ForceArrowDown x={cx} y={16} len={16} />
-      <CenterLabel x={cx} y={186} text="خم V با شعاع داخلی R و ضخامت t" className="fill-muted" />
+      <CenterLabel x={cx} y={186} text={tr("خم V با شعاع داخلی R و ضخامت t", "V-bend with inside radius R and thickness t")} className="fill-muted" />
     </IllustrationFrame>
   );
 }
 
 /** bending.springback — bent angle under load vs. sprung-back final angle. */
 export function SpringbackIllustration({ values }: { values: Record<string, string> }) {
+  const { t } = useLang();
   const target = num(values, "targetAngle_deg", 90);
   const cx = 160;
   const cy = 130;
@@ -129,18 +137,19 @@ export function SpringbackIllustration({ values }: { values: Record<string, stri
       <line x1={cx} y1={cy} x2={p2.x} y2={p2.y} className="stroke-muted" strokeWidth={3} />
       <circle cx={cx} cy={cy} r={2} className="fill-foreground" />
       <text x={l1.x} y={l1.y} textAnchor="middle" className="fill-accent" style={{ fontSize: 9 }}>
-        زیر بار
+        {t("زیر بار", "Under load")}
       </text>
       <text x={l2.x} y={l2.y} textAnchor="middle" className="fill-muted" style={{ fontSize: 9 }}>
-        پس از برگشت فنری
+        {t("پس از برگشت فنری", "After springback")}
       </text>
-      <CenterLabel x={cx} y={186} text="زاویه زیر بار در برابر زاویه نهایی پس از برگشت فنری" className="fill-muted" />
+      <CenterLabel x={cx} y={186} text={t("زاویه زیر بار در برابر زاویه نهایی پس از برگشت فنری", "Angle under load vs. final angle after springback")} className="fill-muted" />
     </IllustrationFrame>
   );
 }
 
 /** bending.designCheck — flange length and hole-to-bend distance relative to the bend line. */
 export function DesignCheckIllustration({ values }: { values: Record<string, string> }) {
+  const { t } = useLang();
   const flange = Math.min(120, Math.max(40, num(values, "flangeLength", 25) * 3));
   const holeDist = Math.min(flange - 20, Math.max(14, num(values, "holeDistance", 10) * 3));
   const cx = 90;
@@ -151,15 +160,16 @@ export function DesignCheckIllustration({ values }: { values: Record<string, str
       <path d={`M ${cx} 60 V 150`} className="stroke-accent fill-none" strokeWidth={10} />
       <circle cx={cx + holeDist} cy={60} r={6} className="fill-surface stroke-border" strokeWidth={1.5} />
       <line x1={cx} y1={72} x2={cx} y2={150} className="stroke-muted" strokeDasharray="3 2" strokeWidth={1} />
-      <DimH x1={cx} x2={cx + flange} y={38} label="طول لبه" />
-      <DimH x1={cx} x2={cx + holeDist} y={80} label="فاصله سوراخ تا خم" above={false} />
-      <CenterLabel x={160} y={186} text="حداقل طول لبه و فاصله سوراخ تا خط خم" className="fill-muted" />
+      <DimH x1={cx} x2={cx + flange} y={38} label={t("طول لبه", "Flange length")} />
+      <DimH x1={cx} x2={cx + holeDist} y={80} label={t("فاصله سوراخ تا خم", "Hole-to-bend distance")} above={false} />
+      <CenterLabel x={160} y={186} text={t("حداقل طول لبه و فاصله سوراخ تا خط خم", "Min. flange length and hole-to-bend distance")} className="fill-muted" />
     </IllustrationFrame>
   );
 }
 
 /** drawing.blankDiameter — a round blank drawn into a cylindrical cup. */
 export function CupDrawIllustration({ values }: { values: Record<string, string> }) {
+  const { t } = useLang();
   const d = num(values, "d", 40);
   const h = num(values, "h", 30);
   const r = Math.min(num(values, "r", 4), d / 2 - 2);
@@ -175,7 +185,7 @@ export function CupDrawIllustration({ values }: { values: Record<string, string>
     <IllustrationFrame>
       <ellipse cx={80} cy={100} rx={Dbpx * 0.32} ry={Dbpx * 0.14} className="fill-none stroke-muted" strokeDasharray="4 3" strokeWidth={1} />
       <text x={80} y={100 - Dbpx * 0.14 - 8} textAnchor="middle" className="fill-muted" style={{ fontSize: 9 }}>
-        Db (بلانک اولیه)
+        {t("Db (بلانک اولیه)", "Db (initial blank)")}
       </text>
       <path
         d={`M ${cx - dpx / 2} ${bottomY - hpx} L ${cx - dpx / 2} ${bottomY - rpx} Q ${cx - dpx / 2} ${bottomY} ${cx - dpx / 2 + rpx} ${bottomY} L ${
@@ -190,7 +200,7 @@ export function CupDrawIllustration({ values }: { values: Record<string, string>
       <text x={cx + dpx / 2 + 10} y={bottomY - 4} className="fill-muted" style={{ fontSize: 9 }}>
         r
       </text>
-      <CenterLabel x={160} y={30} text="کشش بلانک به یک کاپ استوانه‌ای" className="fill-muted" />
+      <CenterLabel x={160} y={30} text={t("کشش بلانک به یک کاپ استوانه‌ای", "Drawing a blank into a cylindrical cup")} className="fill-muted" />
     </IllustrationFrame>
   );
 }

@@ -31,6 +31,7 @@ export interface PressSeries {
   driveType: DriveType;
   actuation: Actuation;
   descriptionFa: string;
+  descriptionEn: string;
   orderingCodePattern: string;
   exampleCode: string;
   sourcePages: number[];
@@ -66,6 +67,7 @@ export interface PressModel {
   /** verbatim extra columns from the catalogue table not modeled above, kept for traceability */
   rawDimensionsMm?: Record<string, string | number>;
   notesFa?: string;
+  notesEn?: string;
   /** true when a value could not be read with full confidence from the source PDF */
   lowConfidence?: boolean;
 }

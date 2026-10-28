@@ -29,6 +29,7 @@ export const pressModels: PressModel[] = [
     exampleCode: "PHP/1800/100×10",
     sourcePage: 6,
     notesFa: "مدل ۱۸۰۰ کیلوگرم دارای شیار تخلیه است.",
+    notesEn: "The 1800 kg model has a discharge slot.",
   },
   {
     id: "php-3100",
@@ -53,6 +54,7 @@ export const pressModels: PressModel[] = [
     exampleCode: "PHP/3100/150×10",
     sourcePage: 6,
     notesFa: "مدل ۳۱۰۰ کیلوگرم دارای شیار T شکل است.",
+    notesEn: "The 3100 kg model has a T-slot.",
   },
   {
     id: "php-1800-st",
@@ -291,6 +293,7 @@ export const pressModels: PressModel[] = [
     sourcePage: 9,
     lowConfidence: true,
     notesFa: "ستون C/Ca در منبع مشترک چاپ شده؛ برای تایید دقیق با کاتالوگ اصلی مطابقت داده شود.",
+    notesEn: "The C/Ca column is printed as a shared value in the source; verify against the original catalogue.",
   },
   {
     id: "ppn-625-st",
@@ -308,6 +311,7 @@ export const pressModels: PressModel[] = [
     sourcePage: 9,
     lowConfidence: true,
     notesFa: "ستون C/Ca در منبع مشترک چاپ شده؛ برای تایید دقیق با کاتالوگ اصلی مطابقت داده شود.",
+    notesEn: "The C/Ca column is printed as a shared value in the source; verify against the original catalogue.",
   },
 
   // ---------------- PAD (Hand Lever) ----------------
@@ -429,6 +433,7 @@ export const pressModels: PressModel[] = [
     exampleCode: "PH/16/m",
     sourcePage: 14,
     notesFa: "کورس نوع «m» — E=120mm.",
+    notesEn: "Stroke type \"m\" — E=120mm.",
   },
   {
     id: "ph-16b",
@@ -443,6 +448,7 @@ export const pressModels: PressModel[] = [
     exampleCode: "PH/16/b",
     sourcePage: 14,
     notesFa: "کورس نوع «b» — E=145mm.",
+    notesEn: "Stroke type \"b\" — E=145mm.",
   },
   {
     id: "ph-16z",
@@ -457,6 +463,7 @@ export const pressModels: PressModel[] = [
     exampleCode: "PH/16/z",
     sourcePage: 14,
     notesFa: "کورس نوع «z» — E=170mm.",
+    notesEn: "Stroke type \"z\" — E=170mm.",
   },
   {
     id: "ph-25m",
@@ -510,6 +517,8 @@ export const pressModels: PressModel[] = [
     lowConfidence: true,
     notesFa:
       "کاتالوگ دو ردیف را با برچسب یکسان «PHn/25/st» چاپ کرده (Ha=120,H=320 و Ha=200,H=400)؛ به احتمال زیاد یکی از این دو مدل PHn/16/St است. نیاز به تایید از کاتالوگ اصلی یا فروشنده.",
+    notesEn:
+      "The catalogue prints two rows with the same label \"PHn/25/st\" (Ha=120, H=320 and Ha=200, H=400); one of them is most likely PHn/16/St. Needs confirmation from the original catalogue or the vendor.",
   },
 
   // ---------------- ASH / ASB (Three-plate, integrated die set) ----------------

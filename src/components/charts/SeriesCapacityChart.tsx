@@ -2,8 +2,10 @@
 
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { allSeriesCoverage } from "@/rules/engine";
+import { useLang } from "@/lib/i18n";
 
 export function SeriesCapacityChart() {
+  const { t, fmt } = useLang();
   const data = allSeriesCoverage().map((c) => ({
     name: c.series.code,
     base: c.minForce,
@@ -23,7 +25,7 @@ export function SeriesCapacityChart() {
           formatter={(_value, name, item) => {
             if (name === "base") return ["", ""];
             const p = item.payload as { min: number; max: number };
-            return [`${p.min.toLocaleString()} – ${p.max.toLocaleString()} kgf`, "بازه ظرفیت"];
+            return [`${fmt(p.min, 0)} – ${fmt(p.max, 0)} kgf`, t("بازه ظرفیت", "Capacity range")];
           }}
         />
         <Bar dataKey="base" stackId="a" fill="transparent" />

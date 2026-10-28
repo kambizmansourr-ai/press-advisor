@@ -4,6 +4,8 @@ import "./globals.css";
 import { AppHeader } from "@/components/AppHeader";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
+import { SiteFooter } from "@/components/SiteFooter";
+import { LanguageProvider } from "@/lib/i18n";
 
 const vazirmatn = Vazirmatn({
   variable: "--font-vazir",
@@ -12,9 +14,9 @@ const vazirmatn = Vazirmatn({
 });
 
 export const metadata: Metadata = {
-  title: "سیستم هوشمند ارس زنجان | AZCO",
+  title: "سیستم هوشمند ارس زنجان | Aras Zanjan Smart System | AZCO",
   description:
-    "سیستم هوشمند مهندسی ارس زنجان: انتخاب پرس مناسب بر اساس کاربرد، ماشین‌حساب‌های فرآیندهای فلزکاری و راهنمای رایگان انتخاب اینسرت کاربایدی.",
+    "سیستم هوشمند مهندسی ارس زنجان: انتخاب پرس مناسب بر اساس کاربرد، ماشین‌حساب‌های فرآیندهای فلزکاری و راهنمای رایگان انتخاب اینسرت کاربایدی. Aras Zanjan engineering smart system: press selection by application, metalworking calculators and a free carbide insert selection guide.",
   manifest: "/manifest.json",
   icons: {
     icon: [
@@ -26,7 +28,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "ارس زنجان",
+    title: "Aras Zanjan",
   },
 };
 
@@ -43,12 +45,12 @@ export default function RootLayout({
     <html lang="fa" dir="rtl" className={`${vazirmatn.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider>
-          <ServiceWorkerRegister />
-          <AppHeader />
-          <main className="flex-1">{children}</main>
-          <footer className="border-t border-border py-6 text-center text-xs text-muted">
-            سیستم هوشمند ارس زنجان — بر پایه کاتالوگ رسمی شرکت ارس زنجان (AZCO). داده‌های فنی از کاتالوگ منبع استخراج شده و در بخش «کیفیت داده» قابل بررسی است.
-          </footer>
+          <LanguageProvider>
+            <ServiceWorkerRegister />
+            <AppHeader />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

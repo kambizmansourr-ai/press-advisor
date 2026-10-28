@@ -3,7 +3,9 @@
 import { UseFormRegister, UseFormWatch } from "react-hook-form";
 import { WizardFormValues } from "./types";
 import { NumberField, SelectField } from "@/components/FormFields";
+import { useMemo } from "react";
 import { materials } from "@/data/materials";
+import { useLang } from "@/lib/i18n";
 import { Application } from "@/types/application";
 import {
   PunchingIllustration,
@@ -12,8 +14,6 @@ import {
   RivetingIllustration,
   CoiningIllustration,
 } from "@/components/illustrations/simpleCalcs";
-
-const materialOptions = materials.map((m) => ({ value: m.id, label: `${m.nameFa} (${m.nameEn})` }));
 
 export function DynamicInputs({
   application,
@@ -24,46 +24,51 @@ export function DynamicInputs({
   register: UseFormRegister<WizardFormValues>;
   watch: UseFormWatch<WizardFormValues>;
 }) {
+  const { lang, t } = useLang();
+  const materialOptions = useMemo(
+    () => materials.map((m) => ({ value: m.id, label: lang === "en" ? m.labelEn : `${m.nameFa} (${m.nameEn})` })),
+    [lang]
+  );
   const shape = watch("shape");
   const useManualForce = watch("useManualForce");
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between rounded-lg border border-border bg-surface-2 px-3 py-2">
-        <span className="text-xs font-medium">نیروی موردنیاز را می‌دانم و نیازی به محاسبه ندارم</span>
+        <span className="text-xs font-medium">{t("نیروی موردنیاز را می‌دانم و نیازی به محاسبه ندارم", "I already know the required force; no calculation needed")}</span>
         <label className="inline-flex cursor-pointer items-center gap-2">
           <input type="checkbox" {...register("useManualForce")} className="h-4 w-4 accent-[var(--accent)]" />
         </label>
       </div>
 
       {useManualForce ? (
-        <NumberField<WizardFormValues> label="نیروی موردنیاز" unit="kgf" name="manualForceKgf" register={register} step={1} />
+        <NumberField<WizardFormValues> label={t("نیروی موردنیاز", "Required force")} unit="kgf" name="manualForceKgf" register={register} step={1} />
       ) : (
         <>
-          <SelectField<WizardFormValues> label="جنس قطعه" name="materialId" register={register} options={materialOptions} />
+          <SelectField<WizardFormValues> label={t("جنس قطعه", "Part material")} name="materialId" register={register} options={materialOptions} />
 
           {application.forceCalculator === "punching" && (
             <div className="space-y-3">
               <SelectField<WizardFormValues>
-                label="شکل سوراخ/برش"
+                label={t("شکل سوراخ/برش", "Hole / cut shape")}
                 name="shape"
                 register={register}
                 options={[
-                  { value: "circle", label: "دایره" },
-                  { value: "rectangle", label: "مستطیل" },
+                  { value: "circle", label: t("دایره", "Circle") },
+                  { value: "rectangle", label: t("مستطیل", "Rectangle") },
                 ]}
               />
               <div className="grid grid-cols-2 gap-3">
                 {shape === "circle" ? (
-                  <NumberField<WizardFormValues> label="قطر سوراخ" unit="mm" name="diameterMm" register={register} className="col-span-2" />
+                  <NumberField<WizardFormValues> label={t("قطر سوراخ", "Hole diameter")} unit="mm" name="diameterMm" register={register} className="col-span-2" />
                 ) : (
                   <>
-                    <NumberField<WizardFormValues> label="طول" unit="mm" name="rectLengthMm" register={register} />
-                    <NumberField<WizardFormValues> label="عرض" unit="mm" name="rectWidthMm" register={register} />
+                    <NumberField<WizardFormValues> label={t("طول", "Length")} unit="mm" name="rectLengthMm" register={register} />
+                    <NumberField<WizardFormValues> label={t("عرض", "Width")} unit="mm" name="rectWidthMm" register={register} />
                   </>
                 )}
-                <NumberField<WizardFormValues> label="ضخامت ورق" unit="mm" name="thicknessMm" register={register} step={0.1} />
-                <NumberField<WizardFormValues> label="تعداد سوراخ/قطعه" name="holeCount" register={register} step={1} min={1} />
+                <NumberField<WizardFormValues> label={t("ضخامت ورق", "Sheet thickness")} unit="mm" name="thicknessMm" register={register} step={0.1} />
+                <NumberField<WizardFormValues> label={t("تعداد سوراخ/قطعه", "Holes per part")} name="holeCount" register={register} step={1} min={1} />
               </div>
               <div className="rounded-lg border border-border bg-surface-2 p-3">
                 <PunchingIllustration
@@ -80,14 +85,14 @@ export function DynamicInputs({
           {application.forceCalculator === "bending" && (
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <NumberField<WizardFormValues> label="طول خم" unit="mm" name="bendLengthMm" register={register} />
-                <NumberField<WizardFormValues> label="ضخامت ورق" unit="mm" name="thicknessMm" register={register} step={0.1} />
+                <NumberField<WizardFormValues> label={t("طول خم", "Bend length")} unit="mm" name="bendLengthMm" register={register} />
+                <NumberField<WizardFormValues> label={t("ضخامت ورق", "Sheet thickness")} unit="mm" name="thicknessMm" register={register} step={0.1} />
                 <NumberField<WizardFormValues>
-                  label="دهانه قالب V (اختیاری)"
+                  label={t("دهانه قالب V (اختیاری)", "V-die opening (optional)")}
                   unit="mm"
                   name="dieOpeningMm"
                   register={register}
-                  hint="در صورت خالی بودن، ۸ برابر ضخامت فرض می‌شود"
+                  hint={t("در صورت خالی بودن، ۸ برابر ضخامت فرض می‌شود", "If left empty, 8 × the thickness is assumed")}
                 />
               </div>
               <div className="rounded-lg border border-border bg-surface-2 p-3">
@@ -99,23 +104,23 @@ export function DynamicInputs({
           {application.forceCalculator === "pressFit" && (
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <NumberField<WizardFormValues> label="قطر شفت/بوش" unit="mm" name="shaftDiameterMm" register={register} />
-                <NumberField<WizardFormValues> label="قطر بیرونی میزبان" unit="mm" name="hubOuterDiameterMm" register={register} />
+                <NumberField<WizardFormValues> label={t("قطر شفت/بوش", "Shaft / bushing diameter")} unit="mm" name="shaftDiameterMm" register={register} />
+                <NumberField<WizardFormValues> label={t("قطر بیرونی میزبان", "Host part outer diameter")} unit="mm" name="hubOuterDiameterMm" register={register} />
                 <NumberField<WizardFormValues>
-                  label="تداخل قطری"
+                  label={t("تداخل قطری", "Diametral interference")}
                   unit="mm"
                   name="diametralInterferenceMm"
                   register={register}
                   step={0.005}
                 />
-                <NumberField<WizardFormValues> label="طول تماس" unit="mm" name="contactLengthMm" register={register} />
+                <NumberField<WizardFormValues> label={t("طول تماس", "Contact length")} unit="mm" name="contactLengthMm" register={register} />
                 <NumberField<WizardFormValues>
-                  label="ضریب اصطکاک (اختیاری)"
+                  label={t("ضریب اصطکاک (اختیاری)", "Friction coefficient (optional)")}
                   name="frictionCoefficient"
                   register={register}
                   step={0.01}
                   className="col-span-2"
-                  hint="پیش‌فرض ۰.۱۲ برای تماس خشک فولاد-فولاد"
+                  hint={t("پیش‌فرض ۰.۱۲ برای تماس خشک فولاد-فولاد", "Default 0.12 for dry steel-on-steel contact")}
                 />
               </div>
               <div className="rounded-lg border border-border bg-surface-2 p-3">
@@ -131,7 +136,7 @@ export function DynamicInputs({
           {application.forceCalculator === "riveting" && (
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <NumberField<WizardFormValues> label="قطر پرچ/پین" unit="mm" name="rivetDiameterMm" register={register} />
+                <NumberField<WizardFormValues> label={t("قطر پرچ/پین", "Rivet / pin diameter")} unit="mm" name="rivetDiameterMm" register={register} />
               </div>
               <div className="rounded-lg border border-border bg-surface-2 p-3">
                 <RivetingIllustration diameter={watch("rivetDiameterMm") ?? 4} />
@@ -142,13 +147,13 @@ export function DynamicInputs({
           {application.forceCalculator === "coining" && (
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <NumberField<WizardFormValues> label="سطح تصویرشده نقش" unit="mm²" name="projectedAreaMm2" register={register} step={1} />
+                <NumberField<WizardFormValues> label={t("سطح تصویرشده نقش", "Projected area of impression")} unit="mm²" name="projectedAreaMm2" register={register} step={1} />
                 <NumberField<WizardFormValues>
-                  label="ضریب فشار (اختیاری)"
+                  label={t("ضریب فشار (اختیاری)", "Pressure factor (optional)")}
                   name="pressureFactor"
                   register={register}
                   step={0.5}
-                  hint="پیش‌فرض ۵× برای کوینینگ متوسط؛ برای مارکینگ کم‌عمق ۲ تا ۳ کافی است"
+                  hint={t("پیش‌فرض ۵× برای کوینینگ متوسط؛ برای مارکینگ کم‌عمق ۲ تا ۳ کافی است", "Default 5× for medium coining; 2 to 3 is enough for shallow marking")}
                 />
               </div>
               <div className="rounded-lg border border-border bg-surface-2 p-3">

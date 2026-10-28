@@ -3,6 +3,7 @@
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Legend } from "recharts";
 import { PressModel } from "@/types/press";
 import { pressModels } from "@/data/presses";
+import { useLang } from "@/lib/i18n";
 
 const COLORS = ["#0e7c86", "#b7791f", "#b3261e", "#1b7a4d", "#5b3ea6"];
 
@@ -20,6 +21,7 @@ function maxStroke(p: PressModel): number {
 }
 
 export function CompareRadar({ presses }: { presses: PressModel[] }) {
+  const { t } = useLang();
   if (presses.length < 2) return null;
 
   const maxCapacity = Math.max(...pressModels.map((p) => p.capacityFullKgf));
@@ -29,11 +31,11 @@ export function CompareRadar({ presses }: { presses: PressModel[] }) {
   const maxStrokeAll = Math.max(...pressModels.map(maxStroke)) || 1;
 
   const metrics = [
-    { key: "capacity", label: "ظرفیت" },
-    { key: "throat", label: "فاصله محور" },
-    { key: "daylight", label: "بازه ارتفاع" },
-    { key: "table", label: "سطح میز" },
-    { key: "stroke", label: "کورس" },
+    { key: "capacity", label: t("ظرفیت", "Capacity") },
+    { key: "throat", label: t("فاصله محور", "Throat depth") },
+    { key: "daylight", label: t("بازه ارتفاع", "Daylight range") },
+    { key: "table", label: t("سطح میز", "Table area") },
+    { key: "stroke", label: t("کورس", "Stroke") },
   ];
 
   const data = metrics.map((m) => {

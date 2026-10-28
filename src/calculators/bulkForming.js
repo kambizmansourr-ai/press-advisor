@@ -50,6 +50,19 @@
     return Math.round(x * m) / m;
   };
 
+  /** Prefix a (possibly bilingual "fa / en") warning with its pass number, keeping the fa / en structure. */
+  function passPrefix(n, wn) {
+    const isFa = (s) => /[\u0600-\u06FF]/.test(s);
+    let from = 0;
+    for (;;) {
+      const k = wn.indexOf(' / ', from);
+      if (k === -1) return `پاس ${n}: ${wn}`;
+      const l = wn.slice(0, k), r = wn.slice(k + 3);
+      if (isFa(l) && !isFa(r)) return `پاس ${n}: ${l} / Pass ${n}: ${r}`;
+      from = k + 3;
+    }
+  }
+
   function Step(label, expr, value, unit) { return { label, expr, value: round(value), unit }; }
 
   // ────────────────────────────────────────────────────────────────────────
@@ -374,7 +387,7 @@
         energyIdeal_J: en.Wideal, energyActual_J: en.Wactual, warnings,
         steps: [
           Step('کرنش / strain', 'ε = ln(h0/h1)', eps, '—'),
-          Step('تنش جریان کرنش‌مسطح', "Yf' = 1.155·Ȳf", YfPS, 'MPa'),
+          Step('تنش جریان کرنش‌مسطح / plane-strain flow stress', "Yf' = 1.155·Ȳf", YfPS, 'MPa'),
           Step('عرض نهایی / final width', 'w1 = w0·h0/h1', w1, 'mm'),
           Step('فشار میانگین / avg pressure', "p̄ = Yf'(1 + μa/h)", pAvg, 'MPa'),
           Step('نیرو / force', 'F = p̄·w1·L', F, 'N'),
@@ -455,7 +468,7 @@
       if (ratio < 2 || ratio > 5) warnings.push('نسبت bf/sf توصیه‌شده 2–5 است / recommended bf/sf is 2–5');
       return {
         flashThickness_mm: sf, flashLandWidth_mm: bf, ratio,
-        note: 'پلیسه نازک‌تر و پهن‌تر ⇒ پر شدن بهتر حفره، اما نیرو و سایش قالب بیشتر',
+        note: 'پلیسه نازک‌تر و پهن‌تر ⇒ پر شدن بهتر حفره، اما نیرو و سایش قالب بیشتر / thinner, wider flash fills the cavity better but raises die force and wear',
         warnings,
         steps: [
           Step('ضخامت پلیسه / flash thickness', 'sf = 0.015√A_proj', sf, 'mm'),
@@ -599,7 +612,7 @@
           Step('کاهش ضخامت / draft', 'd = t0 − t1', d, 'mm'),
           Step('نسبت کاهش / reduction', 'r = d/t0', r, '—'),
           Step('کرنش / strain', 'ε = ln(t0/t1)', eps, '—'),
-          Step('تنش جریان مؤثر', planeStrain ? "1.155·Ȳf" : 'Ȳf', Yeff, 'MPa'),
+          Step('تنش جریان مؤثر / effective flow stress', planeStrain ? "1.155·Ȳf" : 'Ȳf', Yeff, 'MPa'),
           Step('طول تماس / contact length', 'L = √(R·d)', L, 'mm'),
           Step('نیرو / roll force', 'F = Yf_eff·w·L', F, 'N'),
           Step('گشتاور / torque', 'T = 0.5·F·L', T / 1000, 'N·m'),
@@ -616,7 +629,7 @@
         maxDraft_mm: dMax, maxReduction: Math.min(1, dMax / t0),
         minExitThickness_mm: Math.max(0, t0 - dMax),
         maxBiteAngle_deg: deg(Math.atan(mu)),
-        steps: [Step('حداکثر draft', 'd_max = μ²R', dMax, 'mm')],
+        steps: [Step('حداکثر draft / max draft', 'd_max = μ²R', dMax, 'mm')],
       };
     },
 
@@ -639,7 +652,7 @@
         totalStrain: epsTotal, passes,
         maxForce_kN: Math.max(...passes.map((p) => p.force_kN)),
         totalPower_kW: passes.reduce((s, p) => s + (p.powerTotal_kW || 0), 0),
-        warnings: passes.flatMap((p, i) => p.warnings.map((wn) => `پاس ${i + 1}: ${wn}`)),
+        warnings: passes.flatMap((p, i) => p.warnings.map((wn) => passPrefix(i + 1, wn))),
       };
     },
 
@@ -740,8 +753,8 @@
         steps: [
           Step('نسبت اکستروژن / extrusion ratio', 'rx = A0/Af', rx, '—'),
           Step('کرنش ایده‌آل / ideal strain', 'ε = ln(rx)', epsIdeal, '—'),
-          Step('کرنش Johnson', 'εx = a + b·ln(rx)', epsX, '—'),
-          Step('جمله اصطکاک جداره', type === 'direct' ? '2L/D0' : '0 (indirect)', frictionTerm, '—'),
+          Step('کرنش Johnson / Johnson strain', 'εx = a + b·ln(rx)', epsX, '—'),
+          Step('جمله اصطکاک جداره / wall-friction term', type === 'direct' ? '2L/D0' : '0 (indirect)', frictionTerm, '—'),
           Step('فشار / pressure', 'p = Ȳf(εx + 2L/D0)', p, 'MPa'),
           Step('نیرو / force', 'F = p·A0', F, 'N'),
         ],
@@ -791,8 +804,8 @@
       return {
         analytic_deg: analytic, practicalRange_deg: practical,
         note: regime === 'hot'
-          ? 'قالب تخت 90° در اکستروژن داغ آلومینیوم رایج است (منطقه فلز مرده نقش قالب مخروطی را بازی می‌کند)'
-          : 'زاویه کوچک‌تر برای اکستروژن سرد با روانکاری خوب',
+          ? 'قالب تخت 90° در اکستروژن داغ آلومینیوم رایج است (منطقه فلز مرده نقش قالب مخروطی را بازی می‌کند) / a flat 90° die is common in hot aluminum extrusion (the dead-metal zone acts as a conical die)'
+          : 'زاویه کوچک‌تر برای اکستروژن سرد با روانکاری خوب / smaller angle for cold extrusion with good lubrication',
       };
     },
   };
@@ -861,7 +874,7 @@
         steps: [
           Step('نسبت کاهش / reduction', 'r = 1 − Af/A0', reduction, '—'),
           Step('کرنش / strain', 'ε = ln(A0/Af)', eps, '—'),
-          Step('تنش جریان میانگین', 'Ȳf = K·εⁿ/(1+n)', Yf, 'MPa'),
+          Step('تنش جریان میانگین / mean flow stress', 'Ȳf = K·εⁿ/(1+n)', Yf, 'MPa'),
           Step('طول تماس / contact length', 'Lc = (D0−Df)/(2 sinα)', Lc, 'mm'),
           Step('ضریب کار زائد / redundant work', 'φ = 0.88 + 0.12·D_avg/Lc', phi, '—'),
           Step('ضریب اصطکاک / friction factor', '1 + μ/tanα', frictionFactor, '—'),
@@ -884,7 +897,7 @@
       return {
         idealMaxReduction: rIdeal, maxStrainWithFriction: epsMax,
         maxReductionWithFriction: rWithFriction, practicalRange: practical,
-        note: 'حد نظری از شرط σd ≤ σf می‌آید؛ کارسختی (n>0) آن را کمی بالا و اصطکاک آن را پایین می‌برد',
+        note: 'حد نظری از شرط σd ≤ σf می‌آید؛ کارسختی (n>0) آن را کمی بالا و اصطکاک آن را پایین می‌برد / the theoretical limit comes from σd ≤ σf; strain hardening (n>0) raises it slightly and friction lowers it',
       };
     },
 
@@ -920,7 +933,7 @@
         annealAfterPasses: anneals,
         maxForce_kN: Math.max(...passes.map((p) => p.force_kN)),
         totalPower_kW: passes.reduce((s, p) => s + (p.power_kW || 0), 0),
-        warnings: passes.flatMap((p, i) => p.warnings.map((wn) => `پاس ${i + 1}: ${wn}`)),
+        warnings: passes.flatMap((p, i) => p.warnings.map((wn) => passPrefix(i + 1, wn))),
       };
     },
 
@@ -928,7 +941,7 @@
     optimumDieAngle({ mu, A0, Af }) {
       req(mu, 'mu'); pos(A0, 'A0'); pos(Af, 'Af');
       const a = deg(Math.sqrt(1.5 * mu * Math.log(A0 / Af)));
-      return { analytic_deg: a, practicalRange_deg: [6, 12], note: '6–10° فولاد، 8–12° مس و آلومینیوم' };
+      return { analytic_deg: a, practicalRange_deg: [6, 12], note: '6–10° فولاد، 8–12° مس و آلومینیوم / 6–10° steel, 8–12° copper and aluminum' };
     },
   };
 

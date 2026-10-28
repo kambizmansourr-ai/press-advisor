@@ -1,7 +1,7 @@
 {
-  "name": "ارس زنجان | سیستم هوشمند",
-  "short_name": "ارس زنجان",
-  "description": "سیستم هوشمند مهندسی ارس زنجان: انتخاب پرس، ماشین‌حساب‌های فلزکاری و راهنمای انتخاب اینسرت",
+  "name": "ارس زنجان | Aras Zanjan Smart System",
+  "short_name": "Aras Zanjan",
+  "description": "سیستم هوشمند مهندسی ارس زنجان: انتخاب پرس، ماشین‌حساب‌های فلزکاری و راهنمای انتخاب اینسرت. Press selection, metalworking calculators and insert selection guide",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

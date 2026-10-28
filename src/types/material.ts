@@ -11,6 +11,8 @@ export interface Material {
   id: string;
   nameFa: string;
   nameEn: string; // e.g. "S235JR"
+  /** descriptive English label (material type + designation) for English UI, e.g. "Mild steel S235JR" */
+  labelEn: string;
   stdNo: string; // e.g. "1.0037"
   standard: string; // e.g. "DIN EN 10025 (1994-03)"
   category: MaterialCategory;

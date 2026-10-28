@@ -138,7 +138,7 @@
       pos(rBar, 'rBar');
       const ldr = 2.0 + 0.5 * (rBar - 1);
       return { LDR: Math.max(1.6, Math.min(3.0, ldr)), rBar,
-        note: 'تقریب عملی؛ LDR واقعی به روانکاری، شعاع ماتریس و نیروی ورق‌گیر هم بستگی دارد' };
+        note: 'تقریب عملی؛ LDR واقعی به روانکاری، شعاع ماتریس و نیروی ورق‌گیر هم بستگی دارد / practical approximation; the real LDR also depends on lubrication, die radius and blank-holder force' };
     },
 
     /** Thinning from in-plane strains (plane stress) */
@@ -334,7 +334,7 @@
       return {
         shearStrength: s, rakeAngle_deg,
         force_N: F, force_kN: F / 1000, force_tonf: F / 9806.65, warnings,
-        note: 'نیرو مستقل از طول برش است — فقط تابع ضخامت و زاویه تیغه',
+        note: 'نیرو مستقل از طول برش است — فقط تابع ضخامت و زاویه تیغه / force is independent of cut length — it depends only on thickness and blade angle',
         steps: [Step('نیرو / force', 'F = S·t²/(2·tanφ)', F, 'N')],
       };
     },
@@ -446,7 +446,7 @@
         angle_deg: a, R, t, K, bendAllowance_mm: BA, OSSB_mm: OSSB, bendDeduction_mm: BD,
         flatLength_mm: flatLength, warnings,
         steps: [
-          Step('ضریب K / K-factor', 'از نسبت R/t', K, '—'),
+          Step('ضریب K / K-factor', 'از نسبت R/t / from the R/t ratio', K, '—'),
           Step('طول خم / bend allowance', 'BA = α·(R + K·t)', BA, 'mm'),
           Step('OSSB', '(R + t)·tan(α/2)', OSSB, 'mm'),
           Step('کسر خم / bend deduction', 'BD = 2·OSSB − BA', BD, 'mm'),
@@ -484,7 +484,7 @@
         estimatedAirBendRadius_mm: 0.16 * D,
         springbackNote: md.springback, warnings,
         steps: [
-          Step('نیروی خم در هوا', 'F = Kbf·UTS·w·t²/D', Fair, 'N'),
+          Step('نیروی خم در هوا / air-bending force', 'F = Kbf·UTS·w·t²/D', Fair, 'N'),
           Step('نیروی نهایی / final force', `× ${md.mult} (${md.en})`, F, 'N'),
         ],
       };
@@ -523,7 +523,7 @@
         radiusIncrease_mm: Rf - Ri, springbackFactor: Ks,
         requiredDieAngle_deg: dieAngle, overbend_deg: overbend, warnings,
         steps: [
-          Step('پارامتر بی‌بعد', 'Ri·Y/(E·t)', x, '—'),
+          Step('پارامتر بی‌بعد / dimensionless parameter', 'Ri·Y/(E·t)', x, '—'),
           Step('نسبت شعاع / radius ratio', 'Ri/Rf = 4x³ − 3x + 1', ratio, '—'),
           Step('شعاع نهایی / final radius', 'Rf = Ri/ratio', Rf, 'mm'),
           Step('ضریب برگشت / springback factor', 'Ks = (2Ri/t+1)/(2Rf/t+1)', Ks, '—'),
@@ -784,7 +784,7 @@
       if (Math.abs(deltaR) > 0.4) warnings.push('|Δr| > 0.4 — گوش‌دار شدن قابل توجه، اضافه پیرایش لازم / significant earing, allow for trimming');
       return {
         deltaR, earAmplitude_mm: amplitude, recommendedTrimAllowance_mm: trimAllowance,
-        earPositions: deltaR > 0 ? '0° و 90° نسبت به جهت نورد' : '45° نسبت به جهت نورد',
+        earPositions: deltaR > 0 ? '0° و 90° نسبت به جهت نورد / 0° and 90° to the rolling direction' : '45° نسبت به جهت نورد / 45° to the rolling direction',
         warnings,
       };
     },

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { RecommendationResult } from "@/rules/engine";
 import { Badge, ProgressBar, Button } from "@/components/ui";
-import { formatNumber } from "@/lib/utils";
+import { useLang } from "@/lib/i18n";
 import { ChevronDown, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getSeriesById } from "@/data/series";
@@ -15,14 +15,15 @@ const statusTone: Record<RecommendationResult["status"], "good" | "warn" | "dang
   marginal: "warn",
   excluded: "danger",
 };
-const statusLabel: Record<RecommendationResult["status"], string> = {
-  recommended: "پیشنهاد می‌شود",
-  marginal: "قابل بررسی",
-  excluded: "نامناسب",
+const statusLabel: Record<RecommendationResult["status"], { fa: string; en: string }> = {
+  recommended: { fa: "پیشنهاد می‌شود", en: "Recommended" },
+  marginal: { fa: "قابل بررسی", en: "Marginal" },
+  excluded: { fa: "نامناسب", en: "Unsuitable" },
 };
 
 export function PressResultCard({ result, rank }: { result: RecommendationResult; rank: number }) {
   const [open, setOpen] = useState(rank === 0);
+  const { t, fmt } = useLang();
   const { press, seriesNameFa, status, utilizationPercent, reasonsFa, warningsFa, exclusionReasonsFa } = result;
   const series = getSeriesById(press.seriesId);
 
@@ -40,8 +41,8 @@ export function PressResultCard({ result, rank }: { result: RecommendationResult
               <Link href={`/catalog/${press.id}`} className="font-bold hover:text-accent hover:underline">
                 {press.model}
               </Link>
-              <Badge tone={statusTone[status]}>{statusLabel[status]}</Badge>
-              {rank === 0 && status === "recommended" && <Badge tone="accent">بهترین گزینه</Badge>}
+              <Badge tone={statusTone[status]}>{t(statusLabel[status].fa, statusLabel[status].en)}</Badge>
+              {rank === 0 && status === "recommended" && <Badge tone="accent">{t("بهترین گزینه", "Best match")}</Badge>}
             </div>
             <div className="mt-0.5 text-xs text-muted">{seriesNameFa}</div>
           </div>
@@ -49,24 +50,28 @@ export function PressResultCard({ result, rank }: { result: RecommendationResult
         <Link
           href={`/compare?ids=${press.id}`}
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border text-muted hover:text-accent hover:border-accent"
-          title="افزودن به مقایسه"
+          title={t("افزودن به مقایسه", "Add to comparison")}
+          aria-label={t("افزودن به مقایسه", "Add to comparison")}
         >
           <Plus size={14} />
         </Link>
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
-        <Spec label="ظرفیت نهایی" value={`${formatNumber(press.capacityFullKgf)} kgf`} />
-        <Spec label="بدنه" value={press.frameMaterial === "cast-iron" ? "چدنی" : "آهنی"} />
-        <Spec label="ابعاد میز" value={press.tableSizeMm ?? press.plateSizeMm ?? "—"} />
-        <Spec label="فاصله محور" value={press.throatDepthMm ? `${press.throatDepthMm}mm` : "—"} />
+        <Spec label={t("ظرفیت نهایی", "Full capacity")} value={`${fmt(press.capacityFullKgf)} kgf`} />
+        <Spec
+          label={t("بدنه", "Frame")}
+          value={press.frameMaterial === "cast-iron" ? t("چدنی", "Cast iron") : t("آهنی", "Steel")}
+        />
+        <Spec label={t("ابعاد میز", "Table size")} value={press.tableSizeMm ?? press.plateSizeMm ?? "—"} />
+        <Spec label={t("فاصله محور", "Throat depth")} value={press.throatDepthMm ? `${press.throatDepthMm}mm` : "—"} />
       </div>
 
       {utilizationPercent != null && (
         <div className="mt-3">
           <div className="mb-1 flex justify-between text-[11px] text-muted">
-            <span>درصد استفاده از ظرفیت</span>
-            <span>{utilizationPercent.toFixed(0)}٪</span>
+            <span>{t("درصد استفاده از ظرفیت", "Capacity utilization")}</span>
+            <span>{utilizationPercent.toFixed(0)}{t("٪", "%")}</span>
           </div>
           <ProgressBar percent={utilizationPercent} tone={utilizationPercent > 100 ? "danger" : utilizationPercent > 90 ? "warn" : "good"} />
         </div>
@@ -75,7 +80,7 @@ export function PressResultCard({ result, rank }: { result: RecommendationResult
       {(reasonsFa.length > 0 || warningsFa.length > 0 || exclusionReasonsFa.length > 0) && (
         <div className="mt-3">
           <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-1 text-xs font-medium text-accent">
-            چرا این دستگاه؟ <ChevronDown size={13} className={cn("transition-transform", open && "rotate-180")} />
+            {t("چرا این دستگاه؟", "Why this machine?")} <ChevronDown size={13} className={cn("transition-transform", open && "rotate-180")} />
           </button>
           {open && (
             <ul className="mt-2 space-y-1.5 text-xs">
@@ -115,11 +120,12 @@ function Spec({ label, value }: { label: string; value: string }) {
 }
 
 export function CompareAllButton({ ids }: { ids: string[] }) {
+  const { t } = useLang();
   if (!ids.length) return null;
   return (
     <Link href={`/compare?ids=${ids.join(",")}`}>
       <Button variant="outline" size="sm">
-        مقایسه {ids.length} مدل برتر
+        {t(`مقایسه ${ids.length} مدل برتر`, `Compare top ${ids.length} models`)}
       </Button>
     </Link>
   );
