@@ -13,6 +13,8 @@ const vazirmatn = Vazirmatn({
   display: "swap",
 });
 
+const EARLY_LANG_SCRIPT = `(function(){try{var q=new URLSearchParams(location.search).get("lang");var l=(q==="en"||q==="fa")?q:localStorage.getItem("lang");if(l==="en"){var d=document.documentElement;d.setAttribute("lang","en");d.setAttribute("dir","ltr");d.setAttribute("data-lang-pending","");setTimeout(function(){d.removeAttribute("data-lang-pending")},3000)}}catch(e){}})();`;
+
 export const metadata: Metadata = {
   title: "سیستم هوشمند ارس زنجان | Aras Zanjan Smart System | AZCO",
   description:
@@ -43,6 +45,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fa" dir="rtl" className={`${vazirmatn.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: EARLY_LANG_SCRIPT }} />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeProvider>
           <LanguageProvider>

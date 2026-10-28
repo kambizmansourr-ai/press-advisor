@@ -1,0 +1,24 @@
+{
+  "redirects": [
+    {
+      "source": "/en",
+      "destination": "/?lang=en",
+      "permanent": false
+    },
+    {
+      "source": "/en/",
+      "destination": "/?lang=en",
+      "permanent": false
+    },
+    {
+      "source": "/fa",
+      "destination": "/?lang=fa",
+      "permanent": false
+    },
+    {
+      "source": "/fa/",
+      "destination": "/?lang=fa",
+      "permanent": false
+    }
+  ]
+}

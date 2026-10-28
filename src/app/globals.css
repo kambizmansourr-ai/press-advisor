@@ -106,3 +106,8 @@ body {
   background: var(--border);
   border-radius: 999px;
 }
+
+/* Hidden only for English visitors until the language provider has applied English (see layout.tsx). */
+html[data-lang-pending] body {
+  visibility: hidden;
+}

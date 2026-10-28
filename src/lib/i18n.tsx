@@ -60,6 +60,10 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLangState(initial);
     applyToDocument(initial);
+    // Reveal the page once React has committed the chosen language (set by the early script in layout.tsx).
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => document.documentElement.removeAttribute("data-lang-pending"))
+    );
   }, []);
 
   const setLang = useCallback((next: Lang) => {

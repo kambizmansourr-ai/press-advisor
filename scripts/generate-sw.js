@@ -54,7 +54,7 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
 
   event.respondWith(
-    caches.match(req).then((cached) => {
+    caches.match(req, { ignoreSearch: req.mode === "navigate" }).then((cached) => {
       if (cached) return cached;
       return fetch(req)
         .then((res) => {
